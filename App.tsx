@@ -63,9 +63,11 @@ const AiAssistant: React.FC<{
     const handleQuery = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!query.trim()) return;
+
         setIsLoading(true);
         setError('');
         setResponse(null);
+
         const businessContext = businesses.map(b => ({
             id: b.id,
             shopName: b.shopName,
@@ -74,16 +76,21 @@ const AiAssistant: React.FC<{
             services: b.services,
             contact: b.contactNumber,
         }));
+
         const prompt = `You are a very helpful assistant for the "Jawala Business Directory".
         Your goal is to understand a user's request in Marathi and provide the most relevant information from the business list.
+
         Here is the list of all available businesses:
         ${JSON.stringify(businessContext, null, 2)}
+
         User's Request: "${query}"
+
         Analyze the request and respond with a JSON object. The JSON must contain:
         1.  "summary": A short, conversational summary of your findings in Marathi.
         2.  "results": An array of results. Each result can be one of two types:
             -   type: "business": If you find a relevant business, include its "businessId".
             -   type: "text": If the user asks for specific information (like a phone number) or if no business is a good match, provide a helpful answer in the "content" field.
+
         If you find multiple relevant businesses, list them all. If the request is generic or you cannot find a good match, provide a friendly text response.`;
         
         try {
@@ -91,12 +98,14 @@ const AiAssistant: React.FC<{
             if (!modelName) {
                 throw new Error("AI_CONFIG_ERROR");
             }
+
             let jsonStr: string;
             if (modelName.startsWith('gemini') || modelName.startsWith('gemma')) {
                 const apiKey = process.env.GOOGLE_API_KEY;
                 if (!apiKey) {
                     throw new Error("GOOGLE_API_KEY_MISSING");
                 }
+
                 const ai = new GoogleGenAI({ apiKey });
                 const result = await ai.models.generateContent({
                     model: modelName,
@@ -128,6 +137,7 @@ const AiAssistant: React.FC<{
                  if (!apiKey) {
                     throw new Error("MISTRAL_API_KEY_MISSING");
                  }
+
                  const response = await fetch('https://api.mistral.ai/v1/chat/completions', {
                     method: 'POST',
                     headers: {
@@ -140,15 +150,18 @@ const AiAssistant: React.FC<{
                         response_format: { type: "json_object" }
                     })
                 });
+
                 if (!response.ok) {
                     const errorData = await response.json();
                     throw new Error(`MISTRAL_API_ERROR: ${errorData.message || response.statusText}`);
                 }
+
                 const data = await response.json();
                 jsonStr = data.choices[0].message.content;
             } else {
                  throw new Error(`UNSUPPORTED_MODEL: ${modelName}`);
             }
+
             const parsedResponse = JSON.parse(jsonStr) as AiResult;
             setResponse(parsedResponse);
         } catch (err) {
@@ -261,6 +274,7 @@ const AiAssistant: React.FC<{
             </div>
         </div>
     );
+
     return (
         <div className="bg-surface p-5 rounded-2xl shadow-card mb-8 animate-fadeInUp" style={{ animationDelay: '50ms' }}>
             <div className="flex items-center gap-2 mb-3">
@@ -331,6 +345,7 @@ const BusinessDetailModal: React.FC<{
     onClose: () => void;
 }> = ({ business, onClose }) => {
     const [isSharing, setIsSharing] = useState(false);
+
     useEffect(() => {
         if (business) {
             document.body.style.overflow = 'hidden';
@@ -396,11 +411,13 @@ const BusinessDetailModal: React.FC<{
     };
     
     if (!business) return null;
+
     const paymentIconMap: Record<string, string> = {
         'UPI': 'fa-solid fa-qrcode', 
         'Cash': 'fa-solid fa-money-bill-wave', 
         'Card': 'fa-regular fa-credit-card'
     };
+
     const DetailItem: React.FC<{icon: string, label: string, value?: string}> = ({icon, label, value}) => (
         value ? (
             <div className="flex items-start gap-4">
@@ -414,10 +431,11 @@ const BusinessDetailModal: React.FC<{
     );
     
     const hasExtraDetails = business.address || business.openingHours || business.homeDelivery;
+
     return (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-40 p-4 animate-fadeInUp" style={{animationDuration: '0.3s'}} onClick={onClose}>
-            <div className="bg-background rounded-xl shadow-xl w-full max-w-md flex flex-col max-h-[90vh]" onClick={e => e.stopPropagation()}>
-                <header className="bg-gradient-to-br from-primary via-primary-dark to-secondary p-5 rounded-t-xl text-white relative">
+            <div className="bg-background rounded-xl w-full max-w-md flex flex-col max-h-[90vh] overflow-hidden" onClick={e => e.stopPropagation()}>
+                <header className="bg-gradient-to-br from-primary via-primary-dark to-secondary p-5 text-white relative">
                     <button 
                         onClick={onClose} 
                         className="absolute top-2 right-2 text-white/70 hover:text-white text-3xl w-10 h-10 flex items-center justify-center transition-colors"
@@ -478,7 +496,7 @@ const BusinessDetailModal: React.FC<{
                       </div>
                     }
                 </main>
-                <footer className="p-4 border-t border-border-color grid grid-cols-2 gap-3 bg-background/70 rounded-b-xl">
+                <footer className="p-4 border-t border-border-color grid grid-cols-2 gap-3 bg-background/70">
                     <a 
                         href={`https://wa.me/91${business.contactNumber}?text=${encodeURIComponent('नमस्कार, मी "जवळा व्यवसाय निर्देशिका" वरून आपला संपर्क घेतला आहे.')}`}
                         onClick={() => trackBusinessInteraction('whatsapp', business.id)}
@@ -575,8 +593,7 @@ const Footer: React.FC<{ onAdminLoginClick: () => void }> = ({ onAdminLoginClick
                                 <i className="fab fa-whatsapp text-2xl text-green-600"></i>
                                 <span>जय वानखेडे</span>
                             </a>
-                            
-                            <a 
+<a 
                                 href={`https://wa.me/919922287156?text=${encodeURIComponent('नमस्कार, मला माझा व्यवसाय "जवळा व्यवसाय निर्देशिका" मध्ये जोडायचा आहे.')}`}
                                 target="_blank" 
                                 rel="noopener noreferrer" 
@@ -619,16 +636,19 @@ const LoginModal: React.FC<{ onLoginSuccess: (user: User) => void, onClose: () =
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+
     useEffect(() => {
         document.body.style.overflow = 'hidden';
         return () => {
             document.body.style.overflow = 'unset';
         };
     }, []);
+
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
         setIsLoading(true);
+
         try {
             const { user } = await SupabaseService.signIn(email, password);
             onLoginSuccess(user);
@@ -639,6 +659,7 @@ const LoginModal: React.FC<{ onLoginSuccess: (user: User) => void, onClose: () =
             setIsLoading(false);
         }
     };
+
     return (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={onClose}>
             <div className="bg-surface rounded-xl shadow-xl w-full max-w-sm p-6 animate-fadeInUp relative" style={{animationDuration: '0.3s'}} onClick={e => e.stopPropagation()}>
@@ -695,6 +716,7 @@ const AdminDashboard: React.FC<{
             document.body.style.overflow = 'unset';
         };
     }, []);
+
     return (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 animate-fadeInUp" style={{animationDuration: '0.3s'}} onClick={onClose}>
             <div className="bg-surface rounded-xl shadow-xl w-full max-w-sm p-6 text-center" onClick={e => e.stopPropagation()}>
@@ -733,12 +755,14 @@ const EditBusinessList: React.FC<{
     onBack: () => void;
 }> = ({ businesses, onSelect, onDelete, onClose, onBack }) => {
     const [deletingId, setDeletingId] = useState<string | null>(null);
+
     useEffect(() => {
         document.body.style.overflow = 'hidden';
         return () => {
             document.body.style.overflow = 'unset';
         };
     }, []);
+
     const handleDelete = async (businessId: string, businessName: string) => {
         if (!confirm(`खात्री आहे का की तुम्ही "${businessName}" हटवू इच्छिता?`)) return;
         
@@ -752,6 +776,7 @@ const EditBusinessList: React.FC<{
             setDeletingId(null);
         }
     };
+
     return (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 animate-fadeInUp" style={{animationDuration: '0.3s'}} onClick={onClose}>
             <div className="bg-surface rounded-xl shadow-xl w-full max-w-lg flex flex-col max-h-[90vh]" onClick={e => e.stopPropagation()}>
@@ -805,15 +830,18 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({ options, selectedId, on
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const selectedOption = options.find(opt => opt.id === selectedId);
+
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
                 setIsOpen(false);
             }
         };
+
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
+
     return (
         <div className="relative w-full md:col-span-2" ref={dropdownRef}>
             <button 
@@ -853,12 +881,14 @@ const BusinessForm: React.FC<{
 }> = ({ categories, onClose, onSave, existingBusiness, isSaving, onBack }) => {
     const [formData, setFormData] = useState<Omit<Partial<Business>, 'services'> & { services?: string }>({});
     const isEditing = !!existingBusiness;
+
     useEffect(() => {
         document.body.style.overflow = 'hidden';
         return () => {
             document.body.style.overflow = 'unset';
         };
     }, []);
+
     useEffect(() => {
         if (existingBusiness) {
             setFormData({
@@ -869,6 +899,7 @@ const BusinessForm: React.FC<{
              setFormData({ paymentOptions: [], category: '' });
         }
     }, [existingBusiness]);
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
@@ -902,6 +933,7 @@ const BusinessForm: React.FC<{
     };
     
     const inputStyles = "w-full p-3 border-2 border-border-color rounded-lg bg-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all";
+
     return (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 animate-fadeInUp" style={{animationDuration: '0.3s'}} onClick={onClose}>
             <form onSubmit={handleSubmit} className="bg-surface rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6" onClick={e => e.stopPropagation()}>
@@ -1058,6 +1090,7 @@ const App: React.FC = () => {
     const [adminView, setAdminView] = useState<'dashboard' | 'add' | 'edit-list' | 'analytics' | null>(null);
     const [businessToEdit, setBusinessToEdit] = useState<Business | null>(null);
     const [isSaving, setIsSaving] = useState(false);
+
     useEffect(() => {
         const loadData = async () => {
             try {
@@ -1067,6 +1100,7 @@ const App: React.FC = () => {
                     CacheService.getCachedBusinesses(),
                     CacheService.getCachedCategories(),
                 ]).catch(() => [[], []]);
+
                 if (cachedData[0].length > 0) {
                     setBusinessData({
                         categories: cachedData[1].sort((a, b) => a.name.localeCompare(b.name)),
@@ -1074,6 +1108,7 @@ const App: React.FC = () => {
                     });
                     setIsLoading(false);
                 }
+
                 const syncResult = await CacheService.smartSync(
                     async () => {
                         const version = await SupabaseService.getDataVersion();
@@ -1090,6 +1125,7 @@ const App: React.FC = () => {
                         return { categories, businesses };
                     }
                 );
+
                 if (syncResult.action !== 'no_change') {
                     console.log(`📱 Data ${syncResult.fromCache ? 'from cache' : 'synced from server'}`);
                     setBusinessData({
@@ -1097,6 +1133,7 @@ const App: React.FC = () => {
                         businesses: syncResult.businesses
                     });
                 }
+
                 const params = new URLSearchParams(window.location.search);
                 const businessId = params.get('businessId');
                 if (businessId) {
@@ -1108,6 +1145,7 @@ const App: React.FC = () => {
                         }, 100);
                     }
                 }
+
                 const user = await SupabaseService.getCurrentUser();
                 if (user) {
                     const isAdmin = await SupabaseService.isUserAdmin(user.id);
@@ -1122,7 +1160,9 @@ const App: React.FC = () => {
                 setIsLoading(false);
             }
         };
+
         loadData();
+
         const subscription = SupabaseService.subscribeToBusinessChanges(async (payload) => {
             console.log('🔄 Real-time change detected:', payload.eventType);
             
@@ -1162,6 +1202,7 @@ const App: React.FC = () => {
                 console.error('Failed to update version:', error);
             }
         });
+
         return () => {
             subscription.unsubscribe();
         };
@@ -1207,11 +1248,12 @@ const App: React.FC = () => {
     
     const handleAdminLoginClick = () => setShowLogin(true);
     
-    const handleLoginSuccess = (user: User) => {
+    const handle LoginSuccess = (user: User) => {
         setCurrentUser(user);
         setShowLogin(false);
         setAdminView('dashboard');
     };
+
     const handleLogout = async () => {
         try {
             await SupabaseService.signOut();
@@ -1223,10 +1265,12 @@ const App: React.FC = () => {
             alert('लॉगआउट करताना त्रुटी आली.');
         }
     };
+
     const handleCloseAdmin = () => { 
         setAdminView(null); 
         setBusinessToEdit(null); 
     };
+
     const handleSaveBusiness = async (businessToSave: Business) => {
         setIsSaving(true);
         try {
@@ -1237,6 +1281,7 @@ const App: React.FC = () => {
                 await SupabaseService.addBusiness(businessToSave);
                 alert('व्यवसाय यशस्वीरित्या जोडला गेला!');
             }
+
             const businesses = await SupabaseService.fetchBusinesses();
             setBusinessData(prev => ({ ...prev, businesses }));
             
@@ -1249,6 +1294,7 @@ const App: React.FC = () => {
             setIsSaving(false);
         }
     };
+
     const handleDeleteBusiness = async (businessId: string) => {
         try {
             await SupabaseService.deleteBusiness(businessId);
@@ -1266,6 +1312,7 @@ const App: React.FC = () => {
     const filteredBusinesses = useMemo(() => {
         const baseList = businessData.businesses;
         const searchTermLower = searchTerm.toLowerCase();
+
         if (searchTerm) {
             return baseList.filter(business =>
                 business.shopName.toLowerCase().includes(searchTermLower) ||
@@ -1273,9 +1320,11 @@ const App: React.FC = () => {
                 business.contactNumber.includes(searchTermLower)
             );
         }
+
         if (selectedCategory) {
             return baseList.filter(business => business.category === selectedCategory);
         }
+
         return baseList;
     }, [businessData.businesses, searchTerm, selectedCategory]);
 
@@ -1295,6 +1344,7 @@ const App: React.FC = () => {
         <div className="min-h-screen flex flex-col">
             <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 max-w-4xl flex-grow">
                 <Header />
+
                 <AiAssistant 
                     businesses={businessData.businesses} 
                     categories={businessData.categories} 
@@ -1302,6 +1352,7 @@ const App: React.FC = () => {
                     query={searchTerm} 
                     onQueryChange={setSearchTerm} 
                 />
+
                 {!isSearching && (
                     <div className="mb-6">
                         <CategoryGrid 
@@ -1333,6 +1384,7 @@ const App: React.FC = () => {
                         </h2>
                     </div>
                 )}
+
                 <div id="business-list">
                     <BusinessList 
                         businesses={filteredBusinesses} 
@@ -1343,6 +1395,7 @@ const App: React.FC = () => {
                     />
                 </div>
             </main>
+
             <BusinessDetailModal business={viewedBusiness} onClose={() => setViewedBusiness(null)} />
             
             {showUserNamePopup && <UserNamePopup onSave={handleSaveUserName} />}
@@ -1386,6 +1439,7 @@ const App: React.FC = () => {
                     setBusinessToEdit(null);
                 }}
             />}
+
             <Footer onAdminLoginClick={handleAdminLoginClick} />
         </div>
     );
