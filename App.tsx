@@ -536,66 +536,108 @@ const BusinessDetailModal: React.FC<{
 };
 
 const Footer: React.FC<{ onAdminLoginClick: () => void }> = ({ onAdminLoginClick }) => {
-    const [showContactMenu, setShowContactMenu] = useState(false);
+    const [showContactPopup, setShowContactPopup] = useState(false);
+    
+    useEffect(() => {
+        if (showContactPopup) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, [showContactPopup]);
     
     return (
-        <footer className="bg-gradient-to-br from-primary via-primary-dark to-secondary text-white p-8 mt-16 text-center shadow-lg rounded-t-xl">
-            <div className="relative z-10 space-y-6">
-                <h3 className="text-2xl font-bold">तुमचा व्यवसाय वाढवा!</h3>
-                <p className="text-md opacity-90 max-w-lg mx-auto">तुमच्या व्यवसायाची माहिती आमच्या निर्देशिकेत जोडून संपूर्ण गावापर्यंत पोहोचा.</p>
-                
-                <div className="relative inline-block">
+        <>
+            <footer className="bg-gradient-to-br from-primary via-primary-dark to-secondary text-white p-8 mt-16 text-center shadow-lg rounded-t-xl">
+                <div className="relative z-10 space-y-6">
+                    <h3 className="text-2xl font-bold">तुमचा व्यवसाय वाढवा!</h3>
+                    <p className="text-md opacity-90 max-w-lg mx-auto">तुमच्या व्यवसायाची माहिती आमच्या निर्देशिकेत जोडून संपूर्ण गावापर्यंत पोहोचा.</p>
+                    
                     <button
-                        onClick={() => setShowContactMenu(!showContactMenu)}
+                        onClick={() => setShowContactPopup(true)}
                         className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-white/20 hover:bg-white/30 text-white rounded-full transition-all transform hover:scale-105 shadow-lg font-bold backdrop-blur-sm text-lg"
                     >
                         <i className="fas fa-address-book text-xl"></i>
                         <span>संपर्क करा</span>
-                        <i className={`fas fa-chevron-down text-sm transition-transform ${showContactMenu ? 'rotate-180' : ''}`}></i>
                     </button>
                     
-                    {showContactMenu && (
-                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 bg-white rounded-2xl shadow-2xl py-3 px-4 min-w-[280px] animate-fadeInUp">
-                            <div className="space-y-2">
-                                <a 
-                                    href={`https://wa.me/917775875877?text=${encodeURIComponent('नमस्कार, मला माझा व्यवसाय "जवळा व्यवसाय निर्देशिका" मध्ये जोडायचा आहे.')}`}
-                                    target="_blank" 
-                                    rel="noopener noreferrer" 
-                                    className="flex items-center gap-3 px-4 py-3 bg-green-50 hover:bg-green-100 rounded-xl transition-colors text-green-800 font-semibold"
-                                >
-                                    <i className="fab fa-whatsapp text-2xl text-green-600"></i>
-                                    <span>जय वानखेडे</span>
-                                </a>
-                                <a 
-                                    href={`https://wa.me/919922287156?text=${encodeURIComponent('नमस्कार, मला माझा व्यवसाय "जवळा व्यवसाय निर्देशिका" मध्ये जोडायचा आहे.')}`}
-                                    target="_blank" 
-                                    rel="noopener noreferrer" 
-                                    className="flex items-center gap-3 px-4 py-3 bg-green-50 hover:bg-green-100 rounded-xl transition-colors text-green-800 font-semibold"
-                                >
-                                    <i className="fab fa-whatsapp text-2xl text-green-600"></i>
-                                    <span>गोलू काळबांडे</span>
-                                </a>
-                                <div className="border-t border-gray-200 my-2"></div>
-                                <button
-                                    onClick={() => {
-                                        setShowContactMenu(false);
-                                        onAdminLoginClick();
-                                    }}
-                                    className="w-full flex items-center gap-3 px-4 py-3 bg-blue-50 hover:bg-blue-100 rounded-xl transition-colors text-blue-800 font-semibold"
-                                >
-                                    <i className="fas fa-user-shield text-2xl text-blue-600"></i>
-                                    <span>ॲडमिन लॉगिन</span>
-                                </button>
-                            </div>
+                    <div className="text-sm opacity-80 pt-2">
+                        © {new Date().getFullYear()} Jawala Vyapar
+                    </div>
+                </div>
+            </footer>
+
+            {/* Contact Popup */}
+            {showContactPopup && (
+                <div 
+                    className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 animate-fadeInUp backdrop-blur-sm" 
+                    style={{animationDuration: '0.3s'}} 
+                    onClick={() => setShowContactPopup(false)}
+                >
+                    <div 
+                        className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 animate-fadeInUp" 
+                        style={{animationDelay: '0.1s'}} 
+                        onClick={e => e.stopPropagation()}
+                    >
+                        <div className="flex items-center justify-between mb-5">
+                            <h3 className="text-2xl font-bold text-primary">संपर्क करा</h3>
+                            <button 
+                                onClick={() => setShowContactPopup(false)}
+                                className="text-gray-400 hover:text-gray-600 transition-colors"
+                                aria-label="बंद करा"
+                            >
+                                <i className="fas fa-times text-xl"></i>
+                            </button>
                         </div>
-                    )}
+
+                        <div className="space-y-3">
+                            <a 
+                                href={`https://wa.me/917775875877?text=${encodeURIComponent('नमस्कार, मला माझा व्यवसाय "जवळा व्यवसाय निर्देशिका" मध्ये जोडायचा आहे.')}`}
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                className="flex items-center gap-3 px-4 py-3 bg-green-50 hover:bg-green-100 rounded-xl transition-all text-green-800 font-semibold border-2 border-green-200 hover:border-green-300"
+                            >
+                                <i className="fab fa-whatsapp text-2xl text-green-600"></i>
+                                <span>जय वानखेडे</span>
+                            </a>
+                            
+                            <a 
+                                href={`https://wa.me/919922287156?text=${encodeURIComponent('नमस्कार, मला माझा व्यवसाय "जवळा व्यवसाय निर्देशिका" मध्ये जोडायचा आहे.')}`}
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                className="flex items-center gap-3 px-4 py-3 bg-green-50 hover:bg-green-100 rounded-xl transition-all text-green-800 font-semibold border-2 border-green-200 hover:border-green-300"
+                            >
+                                <i className="fab fa-whatsapp text-2xl text-green-600"></i>
+                                <span>गोलू काळबांडे</span>
+                            </a>
+                            
+                            <div className="relative my-4">
+                                <div className="absolute inset-0 flex items-center">
+                                    <div className="w-full border-t border-gray-300"></div>
+                                </div>
+                                <div className="relative flex justify-center text-sm">
+                                    <span className="px-2 bg-white text-gray-500">किंवा</span>
+                                </div>
+                            </div>
+                            
+                            <button
+                                onClick={() => {
+                                    setShowContactPopup(false);
+                                    onAdminLoginClick();
+                                }}
+                                className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-blue-50 hover:bg-blue-100 rounded-xl transition-all text-blue-800 font-semibold border-2 border-blue-200 hover:border-blue-300"
+                            >
+                                <i className="fas fa-user-shield text-2xl text-blue-600"></i>
+                                <span>ॲडमिन लॉगिन</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                
-                <div className="text-sm opacity-80 pt-2">
-                    © {new Date().getFullYear()} Jawala Vyapar
-                </div>
-            </div>
-        </footer>
+            )}
+        </>
     );
 };
 
