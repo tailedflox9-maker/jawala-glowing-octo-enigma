@@ -10,7 +10,8 @@ import { User } from '@supabase/supabase-js';
 import { 
   hasUserName, 
   trackUserVisit, 
-  initializeTracking 
+  initializeTracking,
+  trackBusinessInteraction // NEW: Import tracking function
 } from './trackingService';
 
 // --- HELPER FUNCTIONS ---
@@ -283,6 +284,8 @@ const BusinessDetailModal: React.FC<{
     useEffect(() => {
         if (business) {
             document.body.style.overflow = 'hidden';
+            // TRACK: User viewed business details
+            trackBusinessInteraction('view', business.id);
         } else {
             document.body.style.overflow = 'unset';
         }
@@ -295,6 +298,9 @@ const BusinessDetailModal: React.FC<{
     const shareBusinessDetails = async () => {
         if (!business) return;
         setIsSharing(true);
+        
+        // TRACK: User shared business
+        trackBusinessInteraction('share', business.id);
     
         const baseUrl = `${window.location.origin}${window.location.pathname}`;
         const shareUrl = `${baseUrl}?businessId=${business.id}`;
@@ -380,7 +386,8 @@ const BusinessDetailModal: React.FC<{
 
                 <main className="p-5 space-y-4 overflow-y-auto">
                     <a 
-                        href={`tel:${business.contactNumber}`} 
+                        href={`tel:${business.contactNumber}`}
+                        onClick={() => trackBusinessInteraction('call', business.id)}
                         className="flex items-center gap-4 p-4 bg-surface rounded-lg shadow-subtle hover:shadow-card transition-shadow"
                     >
                         <i className="fas fa-phone text-2xl text-primary"></i>
@@ -432,7 +439,8 @@ const BusinessDetailModal: React.FC<{
 
                 <footer className="p-4 border-t border-border-color grid grid-cols-2 gap-3 bg-background/70 rounded-b-xl">
                     <a 
-                        href={`https://wa.me/91${business.contactNumber}?text=${encodeURIComponent('नमस्कार, मी "जवळा व्यवसाय निर्देशिका" वरून आपला संपर्क घेतला आहे.')}`} 
+                        href={`https://wa.me/91${business.contactNumber}?text=${encodeURIComponent('नमस्कार, मी "जवळा व्यवसाय निर्देशिका" वरून आपला संपर्क घेतला आहे.')}`}
+                        onClick={() => trackBusinessInteraction('whatsapp', business.id)}
                         target="_blank" 
                         rel="noopener noreferrer" 
                         className="w-full text-center py-3 rounded-lg transition-all flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold"
@@ -1289,6 +1297,10 @@ const App: React.FC = () => {
                 <AnalyticsDashboard 
                     onClose={() => setShowAnalytics(false)} 
                     onBack={() => setShowAnalytics(false)}
+                    onBackToAdmin={() => {
+                        setShowAnalytics(false);
+                        setAdminView('dashboard');
+                    }}
                 />
             )}
             
