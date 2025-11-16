@@ -514,7 +514,14 @@ const LoginModal: React.FC<{ onLoginSuccess: (user: User) => void, onClose: () =
 
     return (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={onClose}>
-            <div className="bg-surface rounded-xl shadow-xl w-full max-w-sm p-6 animate-fadeInUp" style={{animationDuration: '0.3s'}} onClick={e => e.stopPropagation()}>
+            <div className="bg-surface rounded-xl shadow-xl w-full max-w-sm p-6 animate-fadeInUp relative" style={{animationDuration: '0.3s'}} onClick={e => e.stopPropagation()}>
+                <button 
+                    onClick={onClose}
+                    className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+                    aria-label="बंद करा"
+                >
+                    <i className="fas fa-times text-xl"></i>
+                </button>
                 <h3 className="font-poppins text-2xl font-bold text-primary mb-4 text-center">ॲडमिन लॉगिन</h3>
                 <form onSubmit={handleLogin} className="space-y-4">
                     <input 
@@ -727,8 +734,9 @@ const BusinessForm: React.FC<{
     onClose: () => void, 
     onSave: (business: Business) => void,
     existingBusiness: Business | null,
-    isSaving: boolean
-}> = ({ categories, onClose, onSave, existingBusiness, isSaving }) => {
+    isSaving: boolean,
+    onBack: () => void
+}> = ({ categories, onClose, onSave, existingBusiness, isSaving, onBack }) => {
     const [formData, setFormData] = useState<Omit<Partial<Business>, 'services'> & { services?: string }>({});
     const isEditing = !!existingBusiness;
 
@@ -787,9 +795,18 @@ const BusinessForm: React.FC<{
     return (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 animate-fadeInUp" style={{animationDuration: '0.3s'}} onClick={onClose}>
             <form onSubmit={handleSubmit} className="bg-surface rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6" onClick={e => e.stopPropagation()}>
-                <h3 className="font-poppins text-2xl font-bold text-primary mb-6 text-center">
-                    {isEditing ? 'व्यवसाय अपडेट करा' : 'नवीन व्यवसाय जोडा'}
-                </h3>
+                <div className="flex items-center justify-between mb-6">
+                    <h3 className="font-poppins text-2xl font-bold text-primary">
+                        {isEditing ? 'व्यवसाय अपडेट करा' : 'नवीन व्यवसाय जोडा'}
+                    </h3>
+                    <button 
+                        type="button"
+                        onClick={onBack} 
+                        className="text-sm text-text-secondary hover:text-primary transition-colors flex items-center gap-2 font-semibold"
+                    >
+                        <i className="fas fa-arrow-left"></i> मागे
+                    </button>
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <input 
                         name="shopName" 
@@ -1299,6 +1316,10 @@ const App: React.FC = () => {
                 onSave={handleSaveBusiness}
                 existingBusiness={businessToEdit}
                 isSaving={isSaving}
+                onBack={() => {
+                    setAdminView(businessToEdit ? 'edit-list' : 'dashboard');
+                    setBusinessToEdit(null);
+                }}
                 onClose={() => {
                     setAdminView(businessToEdit ? 'edit-list' : 'dashboard');
                     setBusinessToEdit(null);
