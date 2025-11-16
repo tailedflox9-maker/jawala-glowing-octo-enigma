@@ -32,7 +32,7 @@ const LoadingSpinner: React.FC = () => (
 
 const Header: React.FC = () => (
     <header className="bg-gradient-to-br from-primary via-primary-dark to-secondary text-white text-center p-5 rounded-2xl mb-6 shadow-lg animate-fadeInUp">
-        <h1 className="font-poppins text-2xl md:text-3xl font-bold tracking-tight">
+        <h1 className="font-poppins text-3xl md:text-4xl font-bold tracking-tight">
           जवळा व्यवसाय निर्देशिका
         </h1>
         <p className="mt-1 text-sm opacity-90">तुमच्या गावातील सर्व व्यवसाय एकाच ठिकाणी!</p>
@@ -238,7 +238,7 @@ const AiAssistant: React.FC<{
                     type="text"
                     value={query}
                     onChange={handleInputChange}
-                    placeholder="उदा. 'रात्री 9 वाजता उघडे असलेले पिझ्झा दुकान शोधा' किंवा 'होम डिलिव्हरी करणारे किराणा'"
+                    placeholder="उदा. 'होम डिलिव्हरी करणारे किराणा दुकान' किंवा 'गाडी दुरुस्ती करणारे गॅरेज'"
                     className="flex-grow px-4 py-2.5 border-2 border-border-color rounded-lg bg-background focus:outline-none focus:border-primary text-sm"
                     disabled={isLoading}
                 />
