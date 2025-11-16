@@ -31,7 +31,7 @@ const LoadingSpinner: React.FC = () => (
 );
 
 const Header: React.FC = () => (
-    <header className="bg-gradient-to-br from-primary via-primary-dark to-secondary text-white text-center p-5 rounded-2xl mb-6 shadow-lg animate-fadeInUp">
+    <header className="bg-gradient-to-r from-primary to-secondary text-white text-center p-5 rounded-2xl mb-6 shadow-lg animate-fadeInUp">
         <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
           जवळा व्यवसाय निर्देशिका
         </h1>
@@ -439,7 +439,7 @@ const BusinessDetailModal: React.FC<{
     return (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-40 p-4 animate-fadeInUp" style={{animationDuration: '0.3s'}} onClick={onClose}>
             <div className="bg-background rounded-xl shadow-xl w-full max-w-md flex flex-col max-h-[90vh]" onClick={e => e.stopPropagation()}>
-                <header className="bg-gradient-to-br from-primary via-primary-dark to-secondary p-5 rounded-t-xl text-white relative">
+                <header className="bg-gradient-to-r from-primary to-secondary p-5 rounded-t-xl text-white relative">
                     <button 
                         onClick={onClose} 
                         className="absolute top-2 right-2 text-white/70 hover:text-white text-3xl w-10 h-10 flex items-center justify-center transition-colors"
@@ -551,7 +551,7 @@ const Footer: React.FC<{ onAdminLoginClick: () => void }> = ({ onAdminLoginClick
     
     return (
         <>
-            <footer className="bg-gradient-to-br from-primary via-primary-dark to-secondary text-white p-8 mt-16 text-center shadow-lg rounded-t-xl">
+            <footer className="bg-gradient-to-r from-primary to-secondary text-white p-8 mt-16 text-center shadow-lg rounded-t-xl">
                 <div className="relative z-10 space-y-6">
                     <h3 className="text-2xl font-bold">तुमचा व्यवसाय वाढवा!</h3>
                     <p className="text-md opacity-90 max-w-lg mx-auto">तुमच्या व्यवसायाची माहिती आमच्या निर्देशिकेत जोडून संपूर्ण गावापर्यंत पोहोचा.</p>
