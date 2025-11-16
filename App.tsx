@@ -234,8 +234,20 @@ const AiAssistant: React.FC<{
                     className="flex-grow w-full px-5 py-3 border-2 border-border-color rounded-full bg-background focus:outline-none focus:border-primary"
                     disabled={isLoading}
                 />
-                <button type="submit" disabled={isLoading || !query.trim()} className="px-8 py-3 bg-primary text-white font-semibold rounded-full hover:bg-green-700 transition-colors flex items-center justify-center gap-2 disabled:bg-primary disabled:opacity-60 disabled:cursor-not-allowed">
-                    {isLoading ? <><i className="fas fa-spinner fa-spin"></i> शोधत आहे...</> : <><i className="fa-solid fa-wand-magic-sparkles"></i> AI शोध</>}
+                <button 
+                    type="submit" 
+                    disabled={isLoading || !query.trim()} 
+                    className="px-8 py-3 bg-primary text-white font-semibold rounded-full hover:bg-green-700 transition-colors flex items-center justify-center gap-2 disabled:bg-primary disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                    {isLoading ? (
+                        <>
+                            <i className="fas fa-spinner fa-spin"></i> शोधत आहे...
+                        </>
+                    ) : (
+                        <>
+                            <i className="fa-solid fa-wand-magic-sparkles"></i> AI शोध
+                        </>
+                    )}
                 </button>
             </form>
             
@@ -258,6 +270,19 @@ const BusinessDetailModal: React.FC<{
     onClose: () => void;
 }> = ({ business, onClose }) => {
     const [isSharing, setIsSharing] = useState(false);
+
+    useEffect(() => {
+        if (business) {
+            // Prevent body scroll when modal is open
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+        
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, [business]);
 
     const shareBusinessDetails = async () => {
         if (!business) return;
@@ -311,32 +336,45 @@ const BusinessDetailModal: React.FC<{
     if (!business) return null;
 
     const paymentIconMap: Record<string, string> = {
-        'UPI': 'fa-solid fa-qrcode', 'Cash': 'fa-solid fa-money-bill-wave', 'Card': 'fa-regular fa-credit-card'
+        'UPI': 'fa-solid fa-qrcode', 
+        'Cash': 'fa-solid fa-money-bill-wave', 
+        'Card': 'fa-regular fa-credit-card'
     };
 
     const DetailItem: React.FC<{icon: string, label: string, value?: string}> = ({icon, label, value}) => (
-        value ? <div className="flex items-start gap-4">
-            <i className={`fas ${icon} w-6 text-center text-secondary text-xl pt-1`}></i>
-            <div>
-                <p className="font-semibold text-text-primary">{label}</p>
-                <p className="text-text-secondary">{value}</p>
+        value ? (
+            <div className="flex items-start gap-4">
+                <i className={`fas ${icon} w-6 text-center text-secondary text-xl pt-1`}></i>
+                <div>
+                    <p className="font-semibold text-text-primary">{label}</p>
+                    <p className="text-text-secondary">{value}</p>
+                </div>
             </div>
-        </div> : null
+        ) : null
     );
     
     const hasExtraDetails = business.address || business.openingHours || business.homeDelivery;
 
     return (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-40 animate-fadeInUp" style={{animationDuration: '0.3s'}} onClick={onClose}>
-            <div className="bg-background rounded-xl shadow-xl w-11/12 max-w-md m-4 flex flex-col max-h-[90vh]" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-40 p-4 animate-fadeInUp" style={{animationDuration: '0.3s'}} onClick={onClose}>
+            <div className="bg-background rounded-xl shadow-xl w-full max-w-md flex flex-col max-h-[90vh]" onClick={e => e.stopPropagation()}>
                 <header className="bg-gradient-to-br from-primary to-secondary p-5 rounded-t-xl text-white relative">
-                    <button onClick={onClose} className="absolute top-2 right-2 text-white/70 hover:text-white text-3xl w-8 h-8 flex items-center justify-center">&times;</button>
-                    <h3 className="font-inter text-2xl font-bold">{business.shopName}</h3>
+                    <button 
+                        onClick={onClose} 
+                        className="absolute top-2 right-2 text-white/70 hover:text-white text-3xl w-10 h-10 flex items-center justify-center transition-colors"
+                        aria-label="Close"
+                    >
+                        &times;
+                    </button>
+                    <h3 className="font-inter text-2xl font-bold pr-10">{business.shopName}</h3>
                     <p className="opacity-90 text-base">{business.ownerName}</p>
                 </header>
 
                 <main className="p-5 space-y-4 overflow-y-auto">
-                    <a href={`tel:${business.contactNumber}`} className="flex items-center gap-4 p-4 bg-surface rounded-lg shadow-subtle">
+                    <a 
+                        href={`tel:${business.contactNumber}`} 
+                        className="flex items-center gap-4 p-4 bg-surface rounded-lg shadow-subtle hover:shadow-card transition-shadow"
+                    >
                         <i className="fas fa-phone text-2xl text-primary"></i>
                         <div>
                             <p className="font-semibold text-text-primary">संपर्क</p>
@@ -361,7 +399,11 @@ const BusinessDetailModal: React.FC<{
                         <div className="p-4 bg-surface rounded-lg shadow-subtle">
                             <h4 className="font-bold text-text-primary mb-3">सेवा/उत्पादने:</h4>
                             <div className="flex flex-wrap gap-2">
-                                {business.services.map(s => <span key={s} className="bg-primary/10 text-primary text-sm font-semibold px-3 py-1 rounded-full">{s}</span>)}
+                                {business.services.map(s => (
+                                    <span key={s} className="bg-primary/10 text-primary text-sm font-semibold px-3 py-1 rounded-full">
+                                        {s}
+                                    </span>
+                                ))}
                             </div>
                         </div>
                     }
@@ -381,9 +423,28 @@ const BusinessDetailModal: React.FC<{
                 </main>
 
                 <footer className="p-4 border-t border-border-color grid grid-cols-2 gap-3 bg-background/70 rounded-b-xl">
-                    <a href={`https://wa.me/91${business.contactNumber}?text=${encodeURIComponent('नमस्कार, मी "जवळा व्यवसाय निर्देशिका" वरून आपला संपर्क घेतला आहे.')}`} target="_blank" rel="noopener noreferrer" className="w-full text-center py-3 rounded-lg transition-all flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold"><i className="fab fa-whatsapp text-xl"></i> WhatsApp</a>
-                    <button onClick={shareBusinessDetails} disabled={isSharing} className="w-full text-center py-3 rounded-lg transition-all flex items-center justify-center gap-2 bg-secondary hover:bg-secondary/90 text-white font-bold disabled:bg-gray-400">
-                        {isSharing ? <><i className="fas fa-spinner fa-spin"></i> शेअर करत आहे...</> : <><i className="fas fa-share text-xl"></i> शेअर करा</>}
+                    <a 
+                        href={`https://wa.me/91${business.contactNumber}?text=${encodeURIComponent('नमस्कार, मी "जवळा व्यवसाय निर्देशिका" वरून आपला संपर्क घेतला आहे.')}`} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="w-full text-center py-3 rounded-lg transition-all flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold"
+                    >
+                        <i className="fab fa-whatsapp text-xl"></i> WhatsApp
+                    </a>
+                    <button 
+                        onClick={shareBusinessDetails} 
+                        disabled={isSharing} 
+                        className="w-full text-center py-3 rounded-lg transition-all flex items-center justify-center gap-2 bg-secondary hover:bg-secondary/90 text-white font-bold disabled:bg-gray-400 disabled:cursor-not-allowed"
+                    >
+                        {isSharing ? (
+                            <>
+                                <i className="fas fa-spinner fa-spin"></i> शेअर करत आहे...
+                            </>
+                        ) : (
+                            <>
+                                <i className="fas fa-share text-xl"></i> शेअर करा
+                            </>
+                        )}
                     </button>
                 </footer>
             </div>
@@ -420,6 +481,13 @@ const LoginModal: React.FC<{ onLoginSuccess: (user: User) => void, onClose: () =
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
+    useEffect(() => {
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, []);
+
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
@@ -437,8 +505,8 @@ const LoginModal: React.FC<{ onLoginSuccess: (user: User) => void, onClose: () =
     };
 
     return (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50" onClick={onClose}>
-            <div className="bg-surface rounded-xl shadow-xl w-11/12 max-w-sm m-4 p-6" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={onClose}>
+            <div className="bg-surface rounded-xl shadow-xl w-full max-w-sm p-6 animate-fadeInUp" style={{animationDuration: '0.3s'}} onClick={e => e.stopPropagation()}>
                 <h3 className="font-inter text-2xl font-bold text-primary mb-4 text-center">ॲडमिन लॉगिन</h3>
                 <form onSubmit={handleLogin} className="space-y-4">
                     <input 
@@ -446,7 +514,7 @@ const LoginModal: React.FC<{ onLoginSuccess: (user: User) => void, onClose: () =
                         value={email} 
                         onChange={e => setEmail(e.target.value)} 
                         placeholder="ईमेल" 
-                        className="w-full p-3 border-2 border-border-color rounded-lg" 
+                        className="w-full p-3 border-2 border-border-color rounded-lg focus:outline-none focus:border-primary" 
                         required 
                         disabled={isLoading}
                     />
@@ -455,7 +523,7 @@ const LoginModal: React.FC<{ onLoginSuccess: (user: User) => void, onClose: () =
                         value={password} 
                         onChange={e => setPassword(e.target.value)} 
                         placeholder="पासवर्ड" 
-                        className="w-full p-3 border-2 border-border-color rounded-lg" 
+                        className="w-full p-3 border-2 border-border-color rounded-lg focus:outline-none focus:border-primary" 
                         required 
                         disabled={isLoading}
                     />
@@ -463,7 +531,7 @@ const LoginModal: React.FC<{ onLoginSuccess: (user: User) => void, onClose: () =
                     <button 
                         type="submit" 
                         disabled={isLoading}
-                        className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 rounded-lg disabled:opacity-60 disabled:cursor-not-allowed"
+                        className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 rounded-lg disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
                     >
                         {isLoading ? 'लॉगिन करत आहे...' : 'लॉगिन करा'}
                     </button>
@@ -478,25 +546,43 @@ const AdminDashboard: React.FC<{
     onEdit: () => void;
     onClose: () => void;
     onLogout: () => void;
-}> = ({ onAdd, onEdit, onClose, onLogout }) => (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 animate-fadeInUp" style={{animationDuration: '0.3s'}} onClick={onClose}>
-        <div className="bg-surface rounded-xl shadow-xl w-11/12 max-w-sm m-4 p-6 text-center" onClick={e => e.stopPropagation()}>
-            <h3 className="font-inter text-2xl font-bold text-primary mb-6">ॲडमिन पॅनल</h3>
-            <div className="space-y-4">
-                <button onClick={onAdd} className="w-full text-lg py-4 px-6 bg-primary text-white font-bold rounded-lg hover:bg-primary/90 transition-all flex items-center justify-center gap-3">
-                    <i className="fas fa-plus-circle"></i> नवीन व्यवसाय जोडा
-                </button>
-                <button onClick={onEdit} className="w-full text-lg py-4 px-6 bg-secondary text-white font-bold rounded-lg hover:bg-secondary/90 transition-all flex items-center justify-center gap-3">
-                    <i className="fas fa-edit"></i> व्यवसाय संपादित करा
-                </button>
-                <button onClick={onLogout} className="w-full text-lg py-4 px-6 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition-all flex items-center justify-center gap-3">
-                    <i className="fas fa-sign-out-alt"></i> लॉगआउट
-                </button>
+}> = ({ onAdd, onEdit, onClose, onLogout }) => {
+    useEffect(() => {
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, []);
+
+    return (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 animate-fadeInUp" style={{animationDuration: '0.3s'}} onClick={onClose}>
+            <div className="bg-surface rounded-xl shadow-xl w-full max-w-sm p-6 text-center" onClick={e => e.stopPropagation()}>
+                <h3 className="font-inter text-2xl font-bold text-primary mb-6">ॲडमिन पॅनल</h3>
+                <div className="space-y-4">
+                    <button 
+                        onClick={onAdd} 
+                        className="w-full text-lg py-4 px-6 bg-primary text-white font-bold rounded-lg hover:bg-primary/90 transition-all flex items-center justify-center gap-3"
+                    >
+                        <i className="fas fa-plus-circle"></i> नवीन व्यवसाय जोडा
+                    </button>
+                    <button 
+                        onClick={onEdit} 
+                        className="w-full text-lg py-4 px-6 bg-secondary text-white font-bold rounded-lg hover:bg-secondary/90 transition-all flex items-center justify-center gap-3"
+                    >
+                        <i className="fas fa-edit"></i> व्यवसाय संपादित करा
+                    </button>
+                    <button 
+                        onClick={onLogout} 
+                        className="w-full text-lg py-4 px-6 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition-all flex items-center justify-center gap-3"
+                    >
+                        <i className="fas fa-sign-out-alt"></i> लॉगआउट
+                    </button>
+                </div>
+                <button onClick={onClose} className="mt-6 text-sm text-text-secondary hover:underline">बंद करा</button>
             </div>
-            <button onClick={onClose} className="mt-6 text-sm text-text-secondary hover:underline">बंद करा</button>
         </div>
-    </div>
-);
+    );
+};
 
 const EditBusinessList: React.FC<{
     businesses: Business[];
@@ -506,6 +592,13 @@ const EditBusinessList: React.FC<{
     onBack: () => void;
 }> = ({ businesses, onSelect, onDelete, onClose, onBack }) => {
     const [deletingId, setDeletingId] = useState<string | null>(null);
+
+    useEffect(() => {
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, []);
 
     const handleDelete = async (businessId: string, businessName: string) => {
         if (!confirm(`खात्री आहे का की तुम्ही "${businessName}" हटवू इच्छिता?`)) return;
@@ -522,15 +615,17 @@ const EditBusinessList: React.FC<{
     };
 
     return (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 animate-fadeInUp" style={{animationDuration: '0.3s'}} onClick={onClose}>
-            <div className="bg-surface rounded-xl shadow-xl w-11/12 max-w-lg m-4 flex flex-col max-h-[90vh]" onClick={e => e.stopPropagation()}>
-                <header className="p-4 border-b border-border-color flex justify-between items-center sticky top-0 bg-surface/80 backdrop-blur-sm">
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 animate-fadeInUp" style={{animationDuration: '0.3s'}} onClick={onClose}>
+            <div className="bg-surface rounded-xl shadow-xl w-full max-w-lg flex flex-col max-h-[90vh]" onClick={e => e.stopPropagation()}>
+                <header className="p-4 border-b border-border-color flex justify-between items-center sticky top-0 bg-surface/95 backdrop-blur-sm rounded-t-xl">
                     <h3 className="font-inter text-xl font-bold text-primary">व्यवसाय संपादित करा</h3>
-                    <button onClick={onBack} className="text-sm text-text-secondary hover:underline flex items-center gap-2"><i className="fas fa-arrow-left"></i> मागे</button>
+                    <button onClick={onBack} className="text-sm text-text-secondary hover:text-primary transition-colors flex items-center gap-2">
+                        <i className="fas fa-arrow-left"></i> मागे
+                    </button>
                 </header>
                 <ul className="overflow-y-auto p-4 space-y-2">
                     {businesses.slice().sort((a,b) => a.shopName.localeCompare(b.shopName)).map(b => (
-                        <li key={b.id} className="flex justify-between items-center p-3 bg-background rounded-lg">
+                        <li key={b.id} className="flex justify-between items-center p-3 bg-background rounded-lg hover:shadow-subtle transition-shadow">
                             <div className="flex-1 min-w-0 pr-3">
                                 <p className="font-semibold truncate">{b.shopName}</p>
                                 <p className="text-sm text-text-secondary truncate">{b.ownerName}</p>
@@ -538,14 +633,14 @@ const EditBusinessList: React.FC<{
                             <div className="flex gap-2 flex-shrink-0">
                                 <button 
                                     onClick={() => onSelect(b)} 
-                                    className="px-3 py-2 bg-secondary text-white font-semibold rounded-lg text-sm hover:bg-secondary/90"
+                                    className="px-3 py-2 bg-secondary text-white font-semibold rounded-lg text-sm hover:bg-secondary/90 transition-colors"
                                 >
                                     संपादित करा
                                 </button>
                                 <button 
                                     onClick={() => handleDelete(b.id, b.shopName)}
                                     disabled={deletingId === b.id}
-                                    className="px-3 py-2 bg-red-600 text-white font-semibold rounded-lg text-sm hover:bg-red-700 disabled:opacity-60 disabled:cursor-not-allowed"
+                                    className="px-3 py-2 bg-red-600 text-white font-semibold rounded-lg text-sm hover:bg-red-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
                                 >
                                     {deletingId === b.id ? '...' : 'हटवा'}
                                 </button>
@@ -553,7 +648,7 @@ const EditBusinessList: React.FC<{
                         </li>
                     ))}
                 </ul>
-                <footer className="p-3 border-t border-border-color text-center sticky bottom-0 bg-surface/80 backdrop-blur-sm">
+                <footer className="p-3 border-t border-border-color text-center sticky bottom-0 bg-surface/95 backdrop-blur-sm rounded-b-xl">
                     <button onClick={onClose} className="text-sm text-text-secondary hover:underline">बंद करा</button>
                 </footer>
             </div>
@@ -575,7 +670,9 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({ options, selectedId, on
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) setIsOpen(false);
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIsOpen(false);
+            }
         };
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -583,14 +680,26 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({ options, selectedId, on
 
     return (
         <div className="relative w-full md:col-span-2" ref={dropdownRef}>
-            <button type="button" onClick={() => setIsOpen(!isOpen)} className="w-full p-3 border-2 border-border-color rounded-lg text-left bg-surface flex justify-between items-center focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all">
-                <span className={selectedOption ? 'text-text-primary' : 'text-text-secondary/80'}>{selectedOption ? selectedOption.name : placeholder}</span>
+            <button 
+                type="button" 
+                onClick={() => setIsOpen(!isOpen)} 
+                className="w-full p-3 border-2 border-border-color rounded-lg text-left bg-surface flex justify-between items-center focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+            >
+                <span className={selectedOption ? 'text-text-primary' : 'text-text-secondary/80'}>
+                    {selectedOption ? selectedOption.name : placeholder}
+                </span>
                 <i className={`fas fa-chevron-down text-text-secondary transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}></i>
             </button>
             {isOpen && (
                 <ul className="absolute z-20 w-full mt-1 bg-surface border-2 border-border-color rounded-lg shadow-lg max-h-60 overflow-y-auto animate-fadeInUp" style={{ animationDuration: '200ms' }}>
                     {options.map(option => (
-                        <li key={option.id} onClick={() => { onChange(option.id); setIsOpen(false); }} className={`p-3 cursor-pointer hover:bg-primary/10 transition-colors ${selectedId === option.id ? 'bg-primary/10 font-semibold text-primary' : ''}`}>{option.name}</li>
+                        <li 
+                            key={option.id} 
+                            onClick={() => { onChange(option.id); setIsOpen(false); }} 
+                            className={`p-3 cursor-pointer hover:bg-primary/10 transition-colors ${selectedId === option.id ? 'bg-primary/10 font-semibold text-primary' : ''}`}
+                        >
+                            {option.name}
+                        </li>
                     ))}
                 </ul>
             )}
@@ -606,8 +715,14 @@ const BusinessForm: React.FC<{
     isSaving: boolean
 }> = ({ categories, onClose, onSave, existingBusiness, isSaving }) => {
     const [formData, setFormData] = useState<Omit<Partial<Business>, 'services'> & { services?: string }>({});
-    const [formMessage, setFormMessage] = useState('');
     const isEditing = !!existingBusiness;
+
+    useEffect(() => {
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, []);
 
     useEffect(() => {
         if (existingBusiness) {
@@ -655,29 +770,129 @@ const BusinessForm: React.FC<{
     const inputStyles = "w-full p-3 border-2 border-border-color rounded-lg bg-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all";
 
     return (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 animate-fadeInUp" style={{animationDuration: '0.3s'}} onClick={onClose}>
-            <form onSubmit={handleSubmit} className="bg-surface rounded-xl shadow-xl w-11/12 max-w-2xl m-4 p-6 max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-                <h3 className="font-inter text-2xl font-bold text-primary mb-6 text-center">{isEditing ? 'व्यवसाय अपडेट करा' : 'नवीन व्यवसाय जोडा'}</h3>
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 animate-fadeInUp" style={{animationDuration: '0.3s'}} onClick={onClose}>
+            <form onSubmit={handleSubmit} className="bg-surface rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6" onClick={e => e.stopPropagation()}>
+                <h3 className="font-inter text-2xl font-bold text-primary mb-6 text-center">
+                    {isEditing ? 'व्यवसाय अपडेट करा' : 'नवीन व्यवसाय जोडा'}
+                </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <input name="shopName" value={formData.shopName || ''} onChange={handleChange} placeholder="दुकानाचे नाव" className={inputStyles} required disabled={isSaving} />
-                    <input name="ownerName" value={formData.ownerName || ''} onChange={handleChange} placeholder="मालकाचे नाव" className={inputStyles} required disabled={isSaving} />
-                    <input name="contactNumber" type="tel" value={formData.contactNumber || ''} onChange={handleChange} placeholder="संपर्क क्रमांक" className={`${inputStyles} md:col-span-2`} required disabled={isSaving} />
-                    <CustomDropdown options={categories} selectedId={formData.category} onChange={id => setFormData({...formData, category: id})} placeholder="श्रेणी निवडा" />
-                    <textarea name="address" value={formData.address || ''} onChange={handleChange} placeholder="पत्ता" className={`${inputStyles} md:col-span-2`} disabled={isSaving} />
-                    <input name="openingHours" value={formData.openingHours || ''} onChange={handleChange} placeholder="उघडण्याची वेळ (उदा. सकाळी १० ते रात्री ९)" className={`${inputStyles} md:col-span-2`} disabled={isSaving} />
-                    <textarea name="services" value={formData.services || ''} onChange={handleChange} placeholder="सेवा/उत्पादने (कॉमाने वेगळे करा)" className={`${inputStyles} md:col-span-2`} disabled={isSaving} />
+                    <input 
+                        name="shopName" 
+                        value={formData.shopName || ''} 
+                        onChange={handleChange} 
+                        placeholder="दुकानाचे नाव" 
+                        className={inputStyles} 
+                        required 
+                        disabled={isSaving} 
+                    />
+                    <input 
+                        name="ownerName" 
+                        value={formData.ownerName || ''} 
+                        onChange={handleChange} 
+                        placeholder="मालकाचे नाव" 
+                        className={inputStyles} 
+                        required 
+                        disabled={isSaving} 
+                    />
+                    <input 
+                        name="contactNumber" 
+                        type="tel" 
+                        value={formData.contactNumber || ''} 
+                        onChange={handleChange} 
+                        placeholder="संपर्क क्रमांक" 
+                        className={`${inputStyles} md:col-span-2`} 
+                        required 
+                        disabled={isSaving} 
+                        pattern="[0-9]{10}"
+                        title="कृपया 10 अंकी मोबाईल नंबर प्रविष्ट करा"
+                    />
+                    <CustomDropdown 
+                        options={categories} 
+                        selectedId={formData.category} 
+                        onChange={id => setFormData({...formData, category: id})} 
+                        placeholder="श्रेणी निवडा" 
+                    />
+                    <textarea 
+                        name="address" 
+                        value={formData.address || ''} 
+                        onChange={handleChange} 
+                        placeholder="पत्ता" 
+                        className={`${inputStyles} md:col-span-2`} 
+                        disabled={isSaving}
+                        rows={2}
+                    />
+                    <input 
+                        name="openingHours" 
+                        value={formData.openingHours || ''} 
+                        onChange={handleChange} 
+                        placeholder="उघडण्याची वेळ (उदा. सकाळी १० ते रात्री ९)" 
+                        className={`${inputStyles} md:col-span-2`} 
+                        disabled={isSaving} 
+                    />
+                    <textarea 
+                        name="services" 
+                        value={formData.services || ''} 
+                        onChange={handleChange} 
+                        placeholder="सेवा/उत्पादने (कॉमाने वेगळे करा)" 
+                        className={`${inputStyles} md:col-span-2`} 
+                        disabled={isSaving}
+                        rows={2}
+                    />
                 </div>
                 <div className="flex flex-wrap gap-6 my-4">
-                   <label className="flex items-center gap-2"><input type="checkbox" name="homeDelivery" checked={formData.homeDelivery || false} onChange={handleCheckboxChange} disabled={isSaving} /> होम डिलिव्हरी</label>
+                   <label className="flex items-center gap-2 cursor-pointer">
+                       <input 
+                           type="checkbox" 
+                           name="homeDelivery" 
+                           checked={formData.homeDelivery || false} 
+                           onChange={handleCheckboxChange} 
+                           disabled={isSaving}
+                           className="w-4 h-4 accent-primary"
+                       /> 
+                       <span>होम डिलिव्हरी</span>
+                   </label>
                    <fieldset className="flex items-center gap-4">
                       <legend className="mr-2 font-semibold">पेमेंट:</legend>
-                      <label className="flex items-center gap-1"><input type="checkbox" value="UPI" checked={formData.paymentOptions?.includes('UPI') || false} onChange={handleCheckboxChange} disabled={isSaving} /> UPI</label>
-                      <label className="flex items-center gap-1"><input type="checkbox" value="Cash" checked={formData.paymentOptions?.includes('Cash') || false} onChange={handleCheckboxChange} disabled={isSaving} /> Cash</label>
-                      <label className="flex items-center gap-1"><input type="checkbox" value="Card" checked={formData.paymentOptions?.includes('Card') || false} onChange={handleCheckboxChange} disabled={isSaving} /> Card</label>
+                      <label className="flex items-center gap-1 cursor-pointer">
+                          <input 
+                              type="checkbox" 
+                              value="UPI" 
+                              checked={formData.paymentOptions?.includes('UPI') || false} 
+                              onChange={handleCheckboxChange} 
+                              disabled={isSaving}
+                              className="w-4 h-4 accent-primary"
+                          /> 
+                          <span>UPI</span>
+                      </label>
+                      <label className="flex items-center gap-1 cursor-pointer">
+                          <input 
+                              type="checkbox" 
+                              value="Cash" 
+                              checked={formData.paymentOptions?.includes('Cash') || false} 
+                              onChange={handleCheckboxChange} 
+                              disabled={isSaving}
+                              className="w-4 h-4 accent-primary"
+                          /> 
+                          <span>Cash</span>
+                      </label>
+                      <label className="flex items-center gap-1 cursor-pointer">
+                          <input 
+                              type="checkbox" 
+                              value="Card" 
+                              checked={formData.paymentOptions?.includes('Card') || false} 
+                              onChange={handleCheckboxChange} 
+                              disabled={isSaving}
+                              className="w-4 h-4 accent-primary"
+                          /> 
+                          <span>Card</span>
+                      </label>
                    </fieldset>
                 </div>
-                {formMessage && <p className="text-center text-green-600 mb-4 font-bold">{formMessage}</p>}
-                <button type="submit" disabled={isSaving} className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 rounded-lg disabled:opacity-60 disabled:cursor-not-allowed">
+                <button 
+                    type="submit" 
+                    disabled={isSaving} 
+                    className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 rounded-lg disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+                >
                     {isSaving ? 'सेव्ह करत आहे...' : (isEditing ? 'अपडेट करा' : 'व्यवसाय जोडा')}
                 </button>
             </form>
@@ -835,10 +1050,15 @@ const App: React.FC = () => {
     const handleCategorySelect = useCallback((categoryId: string | null) => {
         setSelectedCategory(categoryId);
         if (categoryId !== null) {
-          const businessListElement = document.getElementById('business-list-anchor');
-          if (businessListElement) {
-              businessListElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
+          // Smooth scroll with offset to prevent excessive jumping
+          setTimeout(() => {
+            const businessListElement = document.getElementById('business-list-anchor');
+            if (businessListElement) {
+              const yOffset = -20; // 20px offset from top
+              const y = businessListElement.getBoundingClientRect().top + window.pageYOffset + yOffset;
+              window.scrollTo({ top: y, behavior: 'smooth' });
+            }
+          }, 100);
         }
     }, []);
     
@@ -954,23 +1174,34 @@ const App: React.FC = () => {
                 />
 
                 {!isSearching && (
-                    <div className="mb-12">
-                        <CategoryGrid categories={businessData.categories} businessCounts={businessCounts} selectedCategory={selectedCategory} onCategorySelect={handleCategorySelect} />
+                    <div className="mb-8">
+                        <CategoryGrid 
+                            categories={businessData.categories} 
+                            businessCounts={businessCounts} 
+                            selectedCategory={selectedCategory} 
+                            onCategorySelect={handleCategorySelect} 
+                        />
                     </div>
                 )}
                 
-                <div id="business-list-anchor" className="scroll-mt-6"></div>
+                <div id="business-list-anchor" className="scroll-mt-4"></div>
                 
                 {isSearching && filteredBusinesses.length > 0 && (
-                    <div className="text-center mb-8">
-                        <h2 className="text-3xl font-bold font-inter text-text-primary">"<span className="text-primary">{searchTerm}</span>" साठी शोध परिणाम <span className="text-xl font-normal text-text-secondary ml-2">({filteredBusinesses.length})</span></h2>
+                    <div className="text-center mb-6">
+                        <h2 className="text-3xl font-bold font-inter text-text-primary">
+                            "<span className="text-primary">{searchTerm}</span>" साठी शोध परिणाम 
+                            <span className="text-xl font-normal text-text-secondary ml-2">({filteredBusinesses.length})</span>
+                        </h2>
                     </div>
                 )}
                 
                 {!isSearching && selectedCategoryDetails && (
-                     <div className="text-center mb-8">
+                     <div className="text-center mb-6">
                         <i className={`${selectedCategoryDetails.icon} text-4xl text-primary mb-2`}></i>
-                        <h2 className="text-3xl font-bold font-inter text-text-primary">{selectedCategoryDetails.name}<span className="text-xl font-normal text-text-secondary ml-2">({filteredBusinesses.length})</span></h2>
+                        <h2 className="text-3xl font-bold font-inter text-text-primary">
+                            {selectedCategoryDetails.name}
+                            <span className="text-xl font-normal text-text-secondary ml-2">({filteredBusinesses.length})</span>
+                        </h2>
                     </div>
                 )}
 
