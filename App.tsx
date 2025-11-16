@@ -24,40 +24,28 @@ const formatPhoneNumber = (phoneNumber: string): string => {
 
 // --- CORE COMPONENTS ---
 const LoadingSpinner: React.FC = () => (
-    <div className="fixed inset-0 bg-gradient-to-br from-primary via-secondary to-primary flex items-center justify-center z-50">
+    <div className="fixed inset-0 flex items-center justify-center z-50" style={{
+        backgroundColor: '#1a1a1a',
+        backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px)',
+        backgroundSize: '30px 30px'
+    }}>
         <div className="text-center">
-            {/* Animated Icon */}
-            <div className="relative w-32 h-32 mx-auto mb-8">
-                {/* Outer rotating ring */}
-                <div className="absolute inset-0 border-8 border-white/30 rounded-full animate-spin" style={{ animationDuration: '3s' }}></div>
-                
-                {/* Inner rotating ring (opposite direction) */}
-                <div className="absolute inset-3 border-8 border-white/50 rounded-full animate-spin" style={{ animationDuration: '2s', animationDirection: 'reverse' }}></div>
-                
-                {/* Center icon */}
+            {/* Simple animated icon */}
+            <div className="w-20 h-20 mx-auto mb-6 relative">
+                <div className="absolute inset-0 border-4 border-primary/30 rounded-full"></div>
+                <div className="absolute inset-0 border-4 border-t-primary border-transparent rounded-full animate-spin"></div>
                 <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-2xl animate-pulse">
-                        <i className="fas fa-store text-3xl text-primary"></i>
-                    </div>
+                    <i className="fas fa-store text-2xl text-primary"></i>
                 </div>
             </div>
             
             {/* App Name */}
-            <div className="space-y-2 animate-fadeInUp" style={{ animationDelay: '0.3s' }}>
-                <h1 className="text-4xl font-bold text-white tracking-tight">
-                    जवळा व्यवसाय निर्देशिका
-                </h1>
-                <p className="text-white/90 text-lg font-medium">
-                    तुमच्या गावातील सर्व व्यवसाय एकाच ठिकाणी
-                </p>
-            </div>
-            
-            {/* Loading dots */}
-            <div className="flex items-center justify-center gap-2 mt-8">
-                <div className="w-3 h-3 bg-white rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
-                <div className="w-3 h-3 bg-white rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                <div className="w-3 h-3 bg-white rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
-            </div>
+            <h1 className="text-2xl font-bold text-white mb-2">
+                जवळा व्यवसाय निर्देशिका
+            </h1>
+            <p className="text-white/70 text-sm">
+                लोड करत आहे...
+            </p>
         </div>
     </div>
 );
