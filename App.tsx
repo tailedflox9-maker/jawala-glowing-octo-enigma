@@ -7,9 +7,9 @@ import AnalyticsDashboard from './components/AnalyticsDashboard';
 import { GoogleGenAI, Type } from "@google/genai";
 import * as SupabaseService from './supabaseClient';
 import { User } from '@supabase/supabase-js';
-import { 
-  hasUserName, 
-  trackUserVisit, 
+import {
+  hasUserName,
+  trackUserVisit,
   initializeTracking,
   trackBusinessInteraction
 } from './trackingService';
@@ -593,7 +593,7 @@ const Footer: React.FC<{ onAdminLoginClick: () => void }> = ({ onAdminLoginClick
                                 <i className="fab fa-whatsapp text-2xl text-green-600"></i>
                                 <span>जय वानखेडे</span>
                             </a>
-<a 
+                            <a 
                                 href={`https://wa.me/919922287156?text=${encodeURIComponent('नमस्कार, मला माझा व्यवसाय "जवळा व्यवसाय निर्देशिका" मध्ये जोडायचा आहे.')}`}
                                 target="_blank" 
                                 rel="noopener noreferrer" 
@@ -1248,7 +1248,7 @@ const App: React.FC = () => {
     
     const handleAdminLoginClick = () => setShowLogin(true);
     
-    const handle LoginSuccess = (user: User) => {
+    const handleLoginSuccess = (user: User) => {
         setCurrentUser(user);
         setShowLogin(false);
         setAdminView('dashboard');
