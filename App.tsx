@@ -24,7 +24,7 @@ const LoadingSpinner: React.FC = () => (
 
 const Header: React.FC = () => (
     <header className="bg-gradient-to-br from-primary to-secondary text-white text-center p-5 rounded-lg mb-6 shadow-header animate-fadeInUp">
-        <h1 className="font-inter text-2xl md:text-3xl font-bold tracking-tight">
+        <h1 className="font-poppins text-2xl md:text-3xl font-bold tracking-tight">
           जवळा व्यवसाय निर्देशिका
         </h1>
         <p className="mt-1 text-sm opacity-90">तुमच्या गावातील सर्व व्यवसाय एकाच ठिकाणी!</p>
@@ -221,7 +221,7 @@ const AiAssistant: React.FC<{
         <div className="bg-surface p-5 rounded-2xl shadow-card mb-8 animate-fadeInUp" style={{ animationDelay: '50ms' }}>
             <div className="flex items-center gap-2 mb-3">
                 <i className="fa-solid fa-wand-magic-sparkles text-xl text-primary"></i>
-                <h2 className="font-inter text-xl font-bold text-primary">शोध आणि AI मदतनीस</h2>
+                <h2 className="font-poppins text-xl font-bold text-primary">शोध आणि AI मदतनीस</h2>
             </div>
             <p className="text-text-secondary text-sm mb-3">व्यवसाय, मालक किंवा संपर्क शोधा. थेट सापडले नाही, तर आमचा AI मदतनीस मदत करेल!</p>
             
@@ -368,7 +368,7 @@ const BusinessDetailModal: React.FC<{
                     >
                         &times;
                     </button>
-                    <h3 className="font-inter text-2xl font-bold pr-10">{business.shopName}</h3>
+                    <h3 className="font-poppins text-2xl font-bold pr-10">{business.shopName}</h3>
                     <p className="opacity-90 text-base">{business.ownerName}</p>
                 </header>
 
@@ -457,7 +457,7 @@ const BusinessDetailModal: React.FC<{
 const Footer: React.FC<{ onAdminLoginClick: () => void }> = ({ onAdminLoginClick }) => (
     <footer className="bg-gradient-to-br from-primary to-secondary text-white p-8 mt-16 text-center shadow-header">
         <div className="relative z-10 space-y-6">
-            <h3 className="font-inter text-2xl font-bold">तुमचा व्यवसाय वाढवा!</h3>
+            <h3 className="font-poppins text-2xl font-bold">तुमचा व्यवसाय वाढवा!</h3>
             <p className="text-md opacity-90 max-w-lg mx-auto">तुमच्या व्यवसायाची माहिती आमच्या निर्देशिकेत जोडून संपूर्ण गावापर्यंत पोहोचा. नोंदणी प्रक्रिया अगदी सोपी आणि विनामूल्य आहे.</p>
             <div className="flex flex-col items-center gap-3">
                  <button
@@ -509,7 +509,7 @@ const LoginModal: React.FC<{ onLoginSuccess: (user: User) => void, onClose: () =
     return (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={onClose}>
             <div className="bg-surface rounded-xl shadow-xl w-full max-w-sm p-6 animate-fadeInUp" style={{animationDuration: '0.3s'}} onClick={e => e.stopPropagation()}>
-                <h3 className="font-inter text-2xl font-bold text-primary mb-4 text-center">ॲडमिन लॉगिन</h3>
+                <h3 className="font-poppins text-2xl font-bold text-primary mb-4 text-center">ॲडमिन लॉगिन</h3>
                 <form onSubmit={handleLogin} className="space-y-4">
                     <input 
                         type="email" 
@@ -559,7 +559,7 @@ const AdminDashboard: React.FC<{
     return (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 animate-fadeInUp" style={{animationDuration: '0.3s'}} onClick={onClose}>
             <div className="bg-surface rounded-xl shadow-xl w-full max-w-sm p-6 text-center" onClick={e => e.stopPropagation()}>
-                <h3 className="font-inter text-2xl font-bold text-primary mb-6">ॲडमिन पॅनल</h3>
+                <h3 className="font-poppins text-2xl font-bold text-primary mb-6">ॲडमिन पॅनल</h3>
                 <div className="space-y-4">
                     <button 
                         onClick={onAdd} 
@@ -620,7 +620,7 @@ const EditBusinessList: React.FC<{
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 animate-fadeInUp" style={{animationDuration: '0.3s'}} onClick={onClose}>
             <div className="bg-surface rounded-xl shadow-xl w-full max-w-lg flex flex-col max-h-[90vh]" onClick={e => e.stopPropagation()}>
                 <header className="p-4 border-b border-border-color flex justify-between items-center sticky top-0 bg-surface/95 backdrop-blur-sm rounded-t-xl">
-                    <h3 className="font-inter text-xl font-bold text-primary">व्यवसाय संपादित करा</h3>
+                    <h3 className="font-poppins text-xl font-bold text-primary">व्यवसाय संपादित करा</h3>
                     <button onClick={onBack} className="text-sm text-text-secondary hover:text-primary transition-colors flex items-center gap-2">
                         <i className="fas fa-arrow-left"></i> मागे
                     </button>
@@ -774,7 +774,7 @@ const BusinessForm: React.FC<{
     return (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 animate-fadeInUp" style={{animationDuration: '0.3s'}} onClick={onClose}>
             <form onSubmit={handleSubmit} className="bg-surface rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6" onClick={e => e.stopPropagation()}>
-                <h3 className="font-inter text-2xl font-bold text-primary mb-6 text-center">
+                <h3 className="font-poppins text-2xl font-bold text-primary mb-6 text-center">
                     {isEditing ? 'व्यवसाय अपडेट करा' : 'नवीन व्यवसाय जोडा'}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1190,7 +1190,7 @@ const App: React.FC = () => {
                 
                 {isSearching && filteredBusinesses.length > 0 && (
                     <div className="text-center mb-6">
-                        <h2 className="text-3xl font-bold font-inter text-text-primary">
+                        <h2 className="font-poppins text-3xl font-bold text-text-primary">
                             "<span className="text-primary">{searchTerm}</span>" साठी शोध परिणाम 
                             <span className="text-xl font-normal text-text-secondary ml-2">({filteredBusinesses.length})</span>
                         </h2>
@@ -1200,7 +1200,7 @@ const App: React.FC = () => {
                 {!isSearching && selectedCategoryDetails && (
                      <div className="text-center mb-6">
                         <i className={`${selectedCategoryDetails.icon} text-4xl text-primary mb-2`}></i>
-                        <h2 className="text-3xl font-bold font-inter text-text-primary">
+                        <h2 className="font-poppins text-3xl font-bold text-text-primary">
                             {selectedCategoryDetails.name}
                             <span className="text-xl font-normal text-text-secondary ml-2">({filteredBusinesses.length})</span>
                         </h2>
