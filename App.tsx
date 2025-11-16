@@ -535,48 +535,69 @@ const BusinessDetailModal: React.FC<{
     );
 };
 
-const Footer: React.FC<{ onAdminLoginClick: () => void }> = ({ onAdminLoginClick }) => (
-    <footer className="bg-gradient-to-br from-primary via-primary-dark to-secondary text-white p-8 mt-16 text-center shadow-lg rounded-t-xl">
-        <div className="relative z-10 space-y-6">
-            <h3 className="text-2xl font-bold">तुमचा व्यवसाय वाढवा!</h3>
-            <p className="text-md opacity-90 max-w-lg mx-auto">तुमच्या व्यवसायाची माहिती आमच्या निर्देशिकेत जोडून संपूर्ण गावापर्यंत पोहोचा. नोंदणीसाठी खालील व्यक्तींशी संपर्क साधा.</p>
-            
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <a 
-                    href={`https://wa.me/917775875877?text=${encodeURIComponent('नमस्कार, मला माझा व्यवसाय "जवळा व्यवसाय निर्देशिका" मध्ये जोडायचा आहे.')}`}
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="inline-flex items-center justify-center gap-3 px-6 py-3 bg-white/20 hover:bg-white/30 text-white rounded-full transition-all transform hover:scale-105 shadow-lg font-semibold backdrop-blur-sm w-full sm:w-auto"
-                >
-                    <i className="fab fa-whatsapp text-xl"></i>
-                    <span>जय वानखेडे</span>
-                </a>
-                <a 
-                    href={`https://wa.me/919922287156?text=${encodeURIComponent('नमस्कार, मला माझा व्यवसाय "जवळा व्यवसाय निर्देशिका" मध्ये जोडायचा आहे.')}`}
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="inline-flex items-center justify-center gap-3 px-6 py-3 bg-white/20 hover:bg-white/30 text-white rounded-full transition-all transform hover:scale-105 shadow-lg font-semibold backdrop-blur-sm w-full sm:w-auto"
-                >
-                    <i className="fab fa-whatsapp text-xl"></i>
-                    <span>गोलू काळबांडे</span>
-                </a>
+const Footer: React.FC<{ onAdminLoginClick: () => void }> = ({ onAdminLoginClick }) => {
+    const [showContactMenu, setShowContactMenu] = useState(false);
+    
+    return (
+        <footer className="bg-gradient-to-br from-primary via-primary-dark to-secondary text-white p-8 mt-16 text-center shadow-lg rounded-t-xl">
+            <div className="relative z-10 space-y-6">
+                <h3 className="text-2xl font-bold">तुमचा व्यवसाय वाढवा!</h3>
+                <p className="text-md opacity-90 max-w-lg mx-auto">तुमच्या व्यवसायाची माहिती आमच्या निर्देशिकेत जोडून संपूर्ण गावापर्यंत पोहोचा.</p>
+                
+                <div className="relative inline-block">
+                    <button
+                        onClick={() => setShowContactMenu(!showContactMenu)}
+                        className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-white/20 hover:bg-white/30 text-white rounded-full transition-all transform hover:scale-105 shadow-lg font-bold backdrop-blur-sm text-lg"
+                    >
+                        <i className="fas fa-address-book text-xl"></i>
+                        <span>संपर्क करा</span>
+                        <i className={`fas fa-chevron-down text-sm transition-transform ${showContactMenu ? 'rotate-180' : ''}`}></i>
+                    </button>
+                    
+                    {showContactMenu && (
+                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 bg-white rounded-2xl shadow-2xl py-3 px-4 min-w-[280px] animate-fadeInUp">
+                            <div className="space-y-2">
+                                <a 
+                                    href={`https://wa.me/917775875877?text=${encodeURIComponent('नमस्कार, मला माझा व्यवसाय "जवळा व्यवसाय निर्देशिका" मध्ये जोडायचा आहे.')}`}
+                                    target="_blank" 
+                                    rel="noopener noreferrer" 
+                                    className="flex items-center gap-3 px-4 py-3 bg-green-50 hover:bg-green-100 rounded-xl transition-colors text-green-800 font-semibold"
+                                >
+                                    <i className="fab fa-whatsapp text-2xl text-green-600"></i>
+                                    <span>जय वानखेडे</span>
+                                </a>
+                                <a 
+                                    href={`https://wa.me/919922287156?text=${encodeURIComponent('नमस्कार, मला माझा व्यवसाय "जवळा व्यवसाय निर्देशिका" मध्ये जोडायचा आहे.')}`}
+                                    target="_blank" 
+                                    rel="noopener noreferrer" 
+                                    className="flex items-center gap-3 px-4 py-3 bg-green-50 hover:bg-green-100 rounded-xl transition-colors text-green-800 font-semibold"
+                                >
+                                    <i className="fab fa-whatsapp text-2xl text-green-600"></i>
+                                    <span>गोलू काळबांडे</span>
+                                </a>
+                                <div className="border-t border-gray-200 my-2"></div>
+                                <button
+                                    onClick={() => {
+                                        setShowContactMenu(false);
+                                        onAdminLoginClick();
+                                    }}
+                                    className="w-full flex items-center gap-3 px-4 py-3 bg-blue-50 hover:bg-blue-100 rounded-xl transition-colors text-blue-800 font-semibold"
+                                >
+                                    <i className="fas fa-user-shield text-2xl text-blue-600"></i>
+                                    <span>ॲडमिन लॉगिन</span>
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+                
+                <div className="text-sm opacity-80 pt-2">
+                    © {new Date().getFullYear()} Jawala Vyapar
+                </div>
             </div>
-
-            <div className="pt-4">
-                <button
-                    onClick={onAdminLoginClick}
-                    className="text-sm opacity-80 hover:opacity-100 hover:underline"
-                >
-                    ॲडमिन लॉगिन
-                </button>
-            </div>
-            
-            <div className="text-sm opacity-80 pt-2">
-                © {new Date().getFullYear()} Jawala Vyapar
-            </div>
-        </div>
-    </footer>
-);
+        </footer>
+    );
+};
 
 // --- ADMIN COMPONENTS ---
 
