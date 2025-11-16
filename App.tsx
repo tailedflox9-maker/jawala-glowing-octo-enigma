@@ -567,10 +567,9 @@ const LoginModal: React.FC<{ onLoginSuccess: (user: User) => void, onClose: () =
 const AdminDashboard: React.FC<{
     onAdd: () => void;
     onEdit: () => void;
-    onAnalytics: () => void;
     onClose: () => void;
     onLogout: () => void;
-}> = ({ onAdd, onEdit, onAnalytics, onClose, onLogout }) => {
+}> = ({ onAdd, onEdit, onClose, onLogout }) => {
     useEffect(() => {
         document.body.style.overflow = 'hidden';
         return () => {
@@ -594,12 +593,6 @@ const AdminDashboard: React.FC<{
                         className="w-full text-lg py-4 px-6 bg-secondary text-white font-bold rounded-lg hover:bg-secondary/90 transition-all flex items-center justify-center gap-3"
                     >
                         <i className="fas fa-edit"></i> व्यवसाय संपादित करा
-                    </button>
-                    <button 
-                        onClick={onAnalytics} 
-                        className="w-full text-lg py-4 px-6 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-all flex items-center justify-center gap-3"
-                    >
-                        <i className="fas fa-chart-line"></i> अँनालिटिक्स पहा
                     </button>
                     <button 
                         onClick={onLogout} 
