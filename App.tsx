@@ -2,9 +2,16 @@ import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { Business, Category, BusinessData } from './types';
 import CategoryGrid from './components/CategoryGrid';
 import BusinessList from './components/BusinessList';
+import UserNamePopup from './components/UserNamePopup';
+import AnalyticsDashboard from './components/AnalyticsDashboard';
 import { GoogleGenAI, Type } from "@google/genai";
 import * as SupabaseService from './supabaseClient';
 import { User } from '@supabase/supabase-js';
+import { 
+  hasUserName, 
+  trackUserVisit, 
+  initializeTracking 
+} from './trackingService';
 
 // --- HELPER FUNCTIONS ---
 const formatPhoneNumber = (phoneNumber: string): string => {
@@ -275,7 +282,6 @@ const BusinessDetailModal: React.FC<{
 
     useEffect(() => {
         if (business) {
-            // Prevent body scroll when modal is open
             document.body.style.overflow = 'hidden';
         } else {
             document.body.style.overflow = 'unset';
@@ -546,9 +552,10 @@ const LoginModal: React.FC<{ onLoginSuccess: (user: User) => void, onClose: () =
 const AdminDashboard: React.FC<{
     onAdd: () => void;
     onEdit: () => void;
+    onAnalytics: () => void;
     onClose: () => void;
     onLogout: () => void;
-}> = ({ onAdd, onEdit, onClose, onLogout }) => {
+}> = ({ onAdd, onEdit, onAnalytics, onClose, onLogout }) => {
     useEffect(() => {
         document.body.style.overflow = 'hidden';
         return () => {
@@ -572,6 +579,12 @@ const AdminDashboard: React.FC<{
                         className="w-full text-lg py-4 px-6 bg-secondary text-white font-bold rounded-lg hover:bg-secondary/90 transition-all flex items-center justify-center gap-3"
                     >
                         <i className="fas fa-edit"></i> व्यवसाय संपादित करा
+                    </button>
+                    <button 
+                        onClick={onAnalytics} 
+                        className="w-full text-lg py-4 px-6 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-all flex items-center justify-center gap-3"
+                    >
+                        <i className="fas fa-chart-line"></i> अँनालिटिक्स पहा
                     </button>
                     <button 
                         onClick={onLogout} 
@@ -911,10 +924,14 @@ const App: React.FC = () => {
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const [viewedBusiness, setViewedBusiness] = useState<Business | null>(null);
     
+    // Tracking state
+    const [showUserNamePopup, setShowUserNamePopup] = useState<boolean>(false);
+    const [showAnalytics, setShowAnalytics] = useState<boolean>(false);
+    
     // Admin state
     const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [showLogin, setShowLogin] = useState(false);
-    const [adminView, setAdminView] = useState<'dashboard' | 'add' | 'edit-list' | null>(null);
+    const [adminView, setAdminView] = useState<'dashboard' | 'add' | 'edit-list' | 'analytics' | null>(null);
     const [businessToEdit, setBusinessToEdit] = useState<Business | null>(null);
     const [isSaving, setIsSaving] = useState(false);
 
@@ -1049,6 +1066,23 @@ const App: React.FC = () => {
         };
     }, []);
 
+    // Check for user name and initialize tracking
+    useEffect(() => {
+        const checkUserName = async () => {
+            if (!hasUserName()) {
+                // Show popup after a short delay for better UX
+                setTimeout(() => {
+                    setShowUserNamePopup(true);
+                }, 1500);
+            } else {
+                // Initialize tracking for returning users
+                await initializeTracking();
+            }
+        };
+        
+        checkUserName();
+    }, []);
+
     const handleCategorySelect = useCallback((categoryId: string | null) => {
         setSelectedCategory(categoryId);
         if (categoryId !== null) {
@@ -1063,6 +1097,18 @@ const App: React.FC = () => {
           }, 100);
         }
     }, []);
+    
+    // --- Tracking Handlers ---
+    const handleSaveUserName = async (name: string) => {
+        try {
+            await trackUserVisit(name);
+            setShowUserNamePopup(false);
+        } catch (error) {
+            console.error('Error saving user name:', error);
+            // Still close the popup even if there's an error
+            setShowUserNamePopup(false);
+        }
+    };
     
     // --- Admin Handlers ---
     const handleAdminLoginClick = () => setShowLogin(true);
@@ -1220,12 +1266,22 @@ const App: React.FC = () => {
 
             <BusinessDetailModal business={viewedBusiness} onClose={() => setViewedBusiness(null)} />
             
+            {/* --- User Tracking Components --- */}
+            {showUserNamePopup && <UserNamePopup onSave={handleSaveUserName} />}
+            {showAnalytics && (
+                <AnalyticsDashboard 
+                    onClose={() => setShowAnalytics(false)} 
+                    onBack={() => setShowAnalytics(false)}
+                />
+            )}
+            
             {/* --- Admin Modals --- */}
             {showLogin && <LoginModal onLoginSuccess={handleLoginSuccess} onClose={() => setShowLogin(false)} />}
             
             {adminView === 'dashboard' && <AdminDashboard 
                 onAdd={() => { setBusinessToEdit(null); setAdminView('add'); }}
                 onEdit={() => setAdminView('edit-list')}
+                onAnalytics={() => setShowAnalytics(true)}
                 onLogout={handleLogout}
                 onClose={handleCloseAdmin}
             />}
