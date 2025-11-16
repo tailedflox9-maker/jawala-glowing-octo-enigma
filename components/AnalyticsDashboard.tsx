@@ -6,7 +6,7 @@ import {
   AnalyticsSummary,
   UserTrackingData,
   VisitLog 
-} from './trackingService';
+} from '../trackingService';
 
 interface AnalyticsDashboardProps {
   onClose: () => void;
