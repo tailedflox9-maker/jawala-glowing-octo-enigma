@@ -11,7 +11,7 @@ import {
   hasUserName, 
   trackUserVisit, 
   initializeTracking,
-  trackBusinessInteraction // NEW: Import tracking function
+  trackBusinessInteraction
 } from './trackingService';
 
 // --- HELPER FUNCTIONS ---
@@ -98,7 +98,7 @@ const AiAssistant: React.FC<{
         try {
             const modelName = process.env.AI_MODEL;
             if (!modelName) {
-                throw new Error("AI model is not configured. Please set the AI_MODEL environment variable.");
+                throw new Error("AI_CONFIG_ERROR");
             }
 
             let jsonStr: string;
@@ -106,7 +106,7 @@ const AiAssistant: React.FC<{
             if (modelName.startsWith('gemini') || modelName.startsWith('gemma')) {
                 const apiKey = process.env.GOOGLE_API_KEY;
                 if (!apiKey) {
-                    throw new Error("Google API key is not configured. Please set the GOOGLE_API_KEY environment variable for this model.");
+                    throw new Error("GOOGLE_API_KEY_MISSING");
                 }
                 const ai = new GoogleGenAI({ apiKey });
                 const result = await ai.models.generateContent({
@@ -137,7 +137,7 @@ const AiAssistant: React.FC<{
             } else if (modelName.startsWith('mistral') || modelName.startsWith('pixtral')) {
                  const apiKey = process.env.MISTRAL_API_KEY;
                  if (!apiKey) {
-                    throw new Error("Mistral API key is not configured. Please set the MISTRAL_API_KEY environment variable for this model.");
+                    throw new Error("MISTRAL_API_KEY_MISSING");
                  }
                  const response = await fetch('https://api.mistral.ai/v1/chat/completions', {
                     method: 'POST',
@@ -154,14 +154,14 @@ const AiAssistant: React.FC<{
 
                 if (!response.ok) {
                     const errorData = await response.json();
-                    throw new Error(errorData.message || 'Mistral API error');
+                    throw new Error(`MISTRAL_API_ERROR: ${errorData.message || response.statusText}`);
                 }
 
                 const data = await response.json();
                 jsonStr = data.choices[0].message.content;
 
             } else {
-                 throw new Error(`Unsupported model configured in AI_MODEL: ${modelName}.`);
+                 throw new Error(`UNSUPPORTED_MODEL: ${modelName}`);
             }
 
             const parsedResponse = JSON.parse(jsonStr) as AiResult;
@@ -169,15 +169,68 @@ const AiAssistant: React.FC<{
 
         } catch (err) {
             console.error("AI Chat Error:", err);
-            let errorMessage = 'उत्तर मिळवताना एक समस्या आली. कृपया पुन्हा प्रयत्न करा.';
+            
+            let errorMessage = 'उत्तर मिळवताना एक समस्या आली.';
+            let errorDetails = '';
+            
             if (err instanceof Error) {
-                if (err.message.includes('AI_MODEL') || err.message.includes('API_KEY') || err.message.includes('Unsupported model')) {
-                    errorMessage = err.message;
-                } else if (err.message.includes('API key') || err.message.includes('authentication') || err.message.includes('Mistral API error')) {
-                    errorMessage = 'The provided API key is invalid. Please check your configuration.';
+                // Configuration errors
+                if (err.message === 'AI_CONFIG_ERROR') {
+                    errorMessage = 'AI सेवा उपलब्ध नाही.';
+                    errorDetails = 'कृपया प्रशासकाशी संपर्क साधा.';
+                } 
+                // API Key errors
+                else if (err.message === 'GOOGLE_API_KEY_MISSING' || err.message === 'MISTRAL_API_KEY_MISSING') {
+                    errorMessage = 'AI सेवा कॉन्फिगर केलेली नाही.';
+                    errorDetails = 'कृपया प्रशासकाशी संपर्क साधा.';
                 }
+                // Unsupported model
+                else if (err.message.startsWith('UNSUPPORTED_MODEL')) {
+                    errorMessage = 'AI सेवा उपलब्ध नाही.';
+                    errorDetails = 'कृपया प्रशासकाशी संपर्क साधा.';
+                }
+                // Network errors
+                else if (err.message.includes('fetch') || err.message.includes('network') || err.message.includes('Failed to fetch')) {
+                    errorMessage = 'इंटरनेट कनेक्शन तपासा.';
+                    errorDetails = 'नेटवर्क त्रुटी: सर्व्हरशी संपर्क साधता आला नाही.';
+                }
+                // Rate limit errors
+                else if (err.message.includes('rate limit') || err.message.includes('429') || err.message.includes('quota')) {
+                    errorMessage = 'सेवा तात्पुरती उपलब्ध नाही.';
+                    errorDetails = 'कृपया काही वेळाने पुन्हा प्रयत्न करा.';
+                }
+                // JSON parsing errors
+                else if (err.message.includes('JSON') || err.message.includes('parse')) {
+                    errorMessage = 'AI ने अवैध प्रतिसाद दिला.';
+                    errorDetails = 'कृपया पुन्हा प्रयत्न करा.';
+                }
+                // Mistral API errors
+                else if (err.message.startsWith('MISTRAL_API_ERROR')) {
+                    errorMessage = 'AI सेवा उपलब्ध नाही.';
+                    errorDetails = 'कृपया काही वेळाने पुन्हा प्रयत्न करा.';
+                }
+                // Authentication errors
+                else if (err.message.includes('authentication') || err.message.includes('unauthorized') || err.message.includes('401')) {
+                    errorMessage = 'AI सेवा कॉन्फिगर केलेली नाही.';
+                    errorDetails = 'कृपया प्रशासकाशी संपर्क साधा.';
+                }
+                // Generic errors
+                else {
+                    errorMessage = 'AI सेवा उपलब्ध नाही.';
+                    errorDetails = 'कृपया पुन्हा प्रयत्न करा किंवा प्रशासकाशी संपर्क साधा.';
+                }
+            } else {
+                // Unknown error type
+                errorMessage = 'अज्ञात त्रुटी आली.';
+                errorDetails = 'कृपया पेज रीफ्रेश करून पुन्हा प्रयत्न करा.';
             }
-            setError(errorMessage);
+            
+            // Combine error message with details
+            const fullError = errorDetails 
+                ? `${errorMessage}\n\n${errorDetails}` 
+                : errorMessage;
+            
+            setError(fullError);
         } finally {
             setIsLoading(false);
         }
@@ -267,7 +320,23 @@ const AiAssistant: React.FC<{
                     <p className="ml-3 text-text-secondary text-sm animate-pulse">तुमच्यासाठी माहिती शोधत आहे...</p>
                 </div>
             )}
-            {error && <p className="text-center text-red-600 font-semibold p-3 mt-3 bg-red-50 border border-red-200 rounded-lg text-sm">{error}</p>}
+            {error && (
+                <div className="mt-4 p-4 bg-red-50 border-2 border-red-200 rounded-lg animate-fadeInUp">
+                    <div className="flex items-start gap-3">
+                        <i className="fas fa-exclamation-triangle text-red-600 text-xl mt-0.5"></i>
+                        <div className="flex-1">
+                            <h4 className="font-bold text-red-800 mb-1">त्रुटी</h4>
+                            <p className="text-red-700 text-sm whitespace-pre-line">{error}</p>
+                            <button 
+                                onClick={() => setError('')}
+                                className="mt-3 text-xs text-red-600 hover:text-red-800 font-semibold underline"
+                            >
+                                बंद करा
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
             {response && <AiResponseCard aiResult={response} />}
         </div>
     );
@@ -284,7 +353,6 @@ const BusinessDetailModal: React.FC<{
     useEffect(() => {
         if (business) {
             document.body.style.overflow = 'hidden';
-            // TRACK: User viewed business details
             trackBusinessInteraction('view', business.id);
         } else {
             document.body.style.overflow = 'unset';
@@ -299,7 +367,6 @@ const BusinessDetailModal: React.FC<{
         if (!business) return;
         setIsSharing(true);
         
-        // TRACK: User shared business
         trackBusinessInteraction('share', business.id);
     
         const baseUrl = `${window.location.origin}${window.location.pathname}`;
@@ -964,32 +1031,26 @@ const App: React.FC = () => {
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const [viewedBusiness, setViewedBusiness] = useState<Business | null>(null);
     
-    // Tracking state
     const [showUserNamePopup, setShowUserNamePopup] = useState<boolean>(false);
     const [showAnalytics, setShowAnalytics] = useState<boolean>(false);
     
-    // Admin state
     const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [showLogin, setShowLogin] = useState(false);
     const [adminView, setAdminView] = useState<'dashboard' | 'add' | 'edit-list' | 'analytics' | null>(null);
     const [businessToEdit, setBusinessToEdit] = useState<Business | null>(null);
     const [isSaving, setIsSaving] = useState(false);
 
-    // Load initial data
     useEffect(() => {
         const loadData = async () => {
             try {
-                // Import cache service dynamically
                 const CacheService = await import('./cacheService');
                 
-                // Try to load from cache first (instant load)
                 const cachedData = await Promise.all([
                     CacheService.getCachedBusinesses(),
                     CacheService.getCachedCategories(),
                 ]).catch(() => [[], []]);
 
                 if (cachedData[0].length > 0) {
-                    // Show cached data immediately
                     setBusinessData({
                         categories: cachedData[1].sort((a, b) => a.name.localeCompare(b.name)),
                         businesses: cachedData[0]
@@ -997,9 +1058,7 @@ const App: React.FC = () => {
                     setIsLoading(false);
                 }
 
-                // Then do smart sync in background
                 const syncResult = await CacheService.smartSync(
-                    // Fetch remote version (lightweight)
                     async () => {
                         const version = await SupabaseService.getDataVersion();
                         return {
@@ -1007,7 +1066,6 @@ const App: React.FC = () => {
                             last_sync: Date.now(),
                         };
                     },
-                    // Fetch all data (only if needed)
                     async () => {
                         const [categories, businesses] = await Promise.all([
                             SupabaseService.fetchCategories(),
@@ -1017,7 +1075,6 @@ const App: React.FC = () => {
                     }
                 );
 
-                // Update UI with fresh data if sync happened
                 if (syncResult.action !== 'no_change') {
                     console.log(`📱 Data ${syncResult.fromCache ? 'from cache' : 'synced from server'}`);
                     setBusinessData({
@@ -1026,7 +1083,6 @@ const App: React.FC = () => {
                     });
                 }
 
-                // Check for shared business in URL
                 const params = new URLSearchParams(window.location.search);
                 const businessId = params.get('businessId');
                 if (businessId) {
@@ -1039,7 +1095,6 @@ const App: React.FC = () => {
                     }
                 }
 
-                // Check for existing session
                 const user = await SupabaseService.getCurrentUser();
                 if (user) {
                     const isAdmin = await SupabaseService.isUserAdmin(user.id);
@@ -1057,14 +1112,11 @@ const App: React.FC = () => {
 
         loadData();
 
-        // Subscribe to real-time changes
         const subscription = SupabaseService.subscribeToBusinessChanges(async (payload) => {
             console.log('🔄 Real-time change detected:', payload.eventType);
             
-            // Import cache service
             const CacheService = await import('./cacheService');
             
-            // Update cache based on event type
             if (payload.eventType === 'INSERT' && payload.new) {
                 const newBusiness = SupabaseService.dbBusinessToBusiness(payload.new);
                 await CacheService.updateCachedBusiness(newBusiness);
@@ -1089,7 +1141,6 @@ const App: React.FC = () => {
                 }));
             }
             
-            // Update version in cache
             try {
                 const newVersion = await SupabaseService.getDataVersion();
                 await CacheService.setLocalVersion({
@@ -1106,16 +1157,13 @@ const App: React.FC = () => {
         };
     }, []);
 
-    // Check for user name and initialize tracking
     useEffect(() => {
         const checkUserName = async () => {
             if (!hasUserName()) {
-                // Show popup after a short delay for better UX
                 setTimeout(() => {
                     setShowUserNamePopup(true);
                 }, 1500);
             } else {
-                // Initialize tracking for returning users
                 await initializeTracking();
             }
         };
@@ -1126,11 +1174,10 @@ const App: React.FC = () => {
     const handleCategorySelect = useCallback((categoryId: string | null) => {
         setSelectedCategory(categoryId);
         if (categoryId !== null) {
-          // Smooth scroll with offset to prevent excessive jumping
           setTimeout(() => {
             const businessListElement = document.getElementById('business-list-anchor');
             if (businessListElement) {
-              const yOffset = -20; // 20px offset from top
+              const yOffset = -20;
               const y = businessListElement.getBoundingClientRect().top + window.pageYOffset + yOffset;
               window.scrollTo({ top: y, behavior: 'smooth' });
             }
@@ -1138,19 +1185,16 @@ const App: React.FC = () => {
         }
     }, []);
     
-    // --- Tracking Handlers ---
     const handleSaveUserName = async (name: string) => {
         try {
             await trackUserVisit(name);
             setShowUserNamePopup(false);
         } catch (error) {
             console.error('Error saving user name:', error);
-            // Still close the popup even if there's an error
             setShowUserNamePopup(false);
         }
     };
     
-    // --- Admin Handlers ---
     const handleAdminLoginClick = () => setShowLogin(true);
     
     const handleLoginSuccess = (user: User) => {
@@ -1180,16 +1224,13 @@ const App: React.FC = () => {
         setIsSaving(true);
         try {
             if (businessToSave.id) {
-                // Update existing
                 await SupabaseService.updateBusiness(businessToSave);
                 alert('व्यवसाय यशस्वीरित्या अपडेट झाला!');
             } else {
-                // Add new
                 await SupabaseService.addBusiness(businessToSave);
                 alert('व्यवसाय यशस्वीरित्या जोडला गेला!');
             }
 
-            // Reload businesses
             const businesses = await SupabaseService.fetchBusinesses();
             setBusinessData(prev => ({ ...prev, businesses }));
             
@@ -1207,7 +1248,6 @@ const App: React.FC = () => {
         try {
             await SupabaseService.deleteBusiness(businessId);
             
-            // Reload businesses
             const businesses = await SupabaseService.fetchBusinesses();
             setBusinessData(prev => ({ ...prev, businesses }));
             
@@ -1306,7 +1346,6 @@ const App: React.FC = () => {
 
             <BusinessDetailModal business={viewedBusiness} onClose={() => setViewedBusiness(null)} />
             
-            {/* --- User Tracking Components --- */}
             {showUserNamePopup && <UserNamePopup onSave={handleSaveUserName} />}
             {showAnalytics && (
                 <AnalyticsDashboard 
@@ -1319,13 +1358,11 @@ const App: React.FC = () => {
                 />
             )}
             
-            {/* --- Admin Modals --- */}
             {showLogin && <LoginModal onLoginSuccess={handleLoginSuccess} onClose={() => setShowLogin(false)} />}
             
             {adminView === 'dashboard' && <AdminDashboard 
                 onAdd={() => { setBusinessToEdit(null); setAdminView('add'); }}
                 onEdit={() => setAdminView('edit-list')}
-                onAnalytics={() => setShowAnalytics(true)}
                 onLogout={handleLogout}
                 onClose={handleCloseAdmin}
             />}
