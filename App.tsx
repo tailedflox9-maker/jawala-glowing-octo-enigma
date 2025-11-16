@@ -218,46 +218,48 @@ const AiAssistant: React.FC<{
     );
 
     return (
-        <div className="bg-surface p-6 rounded-2xl shadow-card mb-8 animate-fadeInUp" style={{ animationDelay: '50ms' }}>
-            <div className="flex items-center gap-3 mb-3">
-                <i className="fa-solid fa-wand-magic-sparkles text-2xl text-primary"></i>
-                <h2 className="font-inter text-2xl font-bold text-primary">शोध आणि AI मदतनीस</h2>
+        <div className="bg-surface p-5 rounded-2xl shadow-card mb-8 animate-fadeInUp" style={{ animationDelay: '50ms' }}>
+            <div className="flex items-center gap-2 mb-3">
+                <i className="fa-solid fa-wand-magic-sparkles text-xl text-primary"></i>
+                <h2 className="font-inter text-xl font-bold text-primary">शोध आणि AI मदतनीस</h2>
             </div>
-            <p className="text-text-secondary mb-4">व्यवसाय, मालक किंवा संपर्क शोधा. थेट सापडले नाही, तर आमचा AI मदतनीस मदत करेल!</p>
+            <p className="text-text-secondary text-sm mb-3">व्यवसाय, मालक किंवा संपर्क शोधा. थेट सापडले नाही, तर आमचा AI मदतनीस मदत करेल!</p>
             
-            <form onSubmit={handleQuery} className="flex flex-col sm:flex-row gap-3">
+            <form onSubmit={handleQuery} className="flex gap-2">
                 <input
                     type="text"
                     value={query}
                     onChange={handleInputChange}
-                    placeholder="उदा. किराणा दुकान, राहुल पद्मावार, किंवा 'शेवया कुठे मिळतात?'"
-                    className="flex-grow w-full px-5 py-3 border-2 border-border-color rounded-full bg-background focus:outline-none focus:border-primary"
+                    placeholder="उदा. किराणा दुकान, राहुल पद्मावार..."
+                    className="flex-grow px-4 py-2.5 border-2 border-border-color rounded-lg bg-background focus:outline-none focus:border-primary text-sm"
                     disabled={isLoading}
                 />
                 <button 
                     type="submit" 
                     disabled={isLoading || !query.trim()} 
-                    className="px-8 py-3 bg-primary text-white font-semibold rounded-full hover:bg-green-700 transition-colors flex items-center justify-center gap-2 disabled:bg-primary disabled:opacity-60 disabled:cursor-not-allowed"
+                    className="px-5 py-2.5 bg-primary text-white font-semibold rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2 disabled:bg-primary disabled:opacity-60 disabled:cursor-not-allowed whitespace-nowrap"
                 >
                     {isLoading ? (
                         <>
-                            <i className="fas fa-spinner fa-spin"></i> शोधत आहे...
+                            <i className="fas fa-spinner fa-spin text-sm"></i>
+                            <span className="hidden sm:inline">शोधत आहे...</span>
                         </>
                     ) : (
                         <>
-                            <i className="fa-solid fa-wand-magic-sparkles"></i> AI शोध
+                            <i className="fa-solid fa-wand-magic-sparkles text-sm"></i>
+                            <span className="hidden sm:inline">AI शोध</span>
                         </>
                     )}
                 </button>
             </form>
             
             {isLoading && !response && (
-                <div className="flex items-center justify-center p-6">
-                    <div className="w-8 h-8 border-4 border-t-primary border-gray-200 rounded-full animate-spin"></div>
-                    <p className="ml-4 text-text-secondary animate-pulse">तुमच्यासाठी माहिती शोधत आहे...</p>
+                <div className="flex items-center justify-center p-4 mt-3">
+                    <div className="w-6 h-6 border-3 border-t-primary border-gray-200 rounded-full animate-spin"></div>
+                    <p className="ml-3 text-text-secondary text-sm animate-pulse">तुमच्यासाठी माहिती शोधत आहे...</p>
                 </div>
             )}
-            {error && <p className="text-center text-red-600 font-semibold p-4 mt-4 bg-red-50 border border-red-200 rounded-lg">{error}</p>}
+            {error && <p className="text-center text-red-600 font-semibold p-3 mt-3 bg-red-50 border border-red-200 rounded-lg text-sm">{error}</p>}
             {response && <AiResponseCard aiResult={response} />}
         </div>
     );
