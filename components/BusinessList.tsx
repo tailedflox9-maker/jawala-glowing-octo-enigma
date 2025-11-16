@@ -14,7 +14,7 @@ interface BusinessListProps {
 const NoResults: React.FC = () => (
     <div className="flex flex-col items-center text-center p-12 bg-gradient-to-br from-gray-50 to-white rounded-xl shadow-card animate-fadeInUp">
         <span className="text-7xl mb-5">🔍</span>
-        <h3 className="text-3xl font-bold font-inter text-text-primary">काहीही सापडले नाही</h3>
+        <h3 className="text-3xl font-bold text-text-primary">काहीही सापडले नाही</h3>
         <p className="text-text-secondary mt-2 text-lg">कृपया तुमचा शोध बदला किंवा वेगळी श्रेणी निवडा.</p>
     </div>
 );
@@ -61,7 +61,7 @@ const BusinessList: React.FC<BusinessListProps> = ({ businesses, categories, sel
                     <div key={categoryId} className="animate-fadeInUp" style={{ animationDelay: `${groupIndex * 100}ms`}}>
                         <div className="flex items-center gap-4 mb-5 pb-3 border-b-2 border-secondary">
                              <i className={`${category.icon} text-2xl text-secondary`}></i>
-                            <h3 className="text-2xl font-bold font-inter text-primary">{category.name}</h3>
+                            <h3 className="text-2xl font-bold text-primary">{category.name}</h3>
                         </div>
                         <div className="space-y-4">
                             {renderBusinessCards(businessGroup)}
