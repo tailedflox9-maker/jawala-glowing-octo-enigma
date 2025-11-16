@@ -23,33 +23,6 @@ const formatPhoneNumber = (phoneNumber: string): string => {
 };
 
 // --- CORE COMPONENTS ---
-const LoadingSpinner: React.FC = () => (
-    <div className="fixed inset-0 flex items-center justify-center z-50" style={{
-        backgroundColor: '#1a1a1a',
-        backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px)',
-        backgroundSize: '30px 30px'
-    }}>
-        <div className="text-center">
-            {/* Simple animated icon */}
-            <div className="w-20 h-20 mx-auto mb-6 relative">
-                <div className="absolute inset-0 border-4 border-primary/30 rounded-full"></div>
-                <div className="absolute inset-0 border-4 border-t-primary border-transparent rounded-full animate-spin"></div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                    <i className="fas fa-store text-2xl text-primary"></i>
-                </div>
-            </div>
-            
-            {/* App Name */}
-            <h1 className="text-2xl font-bold text-white mb-2">
-                जवळा व्यवसाय निर्देशिका
-            </h1>
-            <p className="text-white/70 text-sm">
-                लोड करत आहे...
-            </p>
-        </div>
-    </div>
-);
-
 const Header: React.FC = () => (
     <header className="bg-gradient-to-r from-primary to-secondary text-white text-center p-5 rounded-2xl mb-6 shadow-lg animate-fadeInUp">
         <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
@@ -1356,7 +1329,7 @@ const App: React.FC = () => {
         }, {} as Record<string, number>);
     }, [businessData.businesses]);
 
-    if (isLoading) return <LoadingSpinner />;
+    if (isLoading) return null; // Just show nothing while loading
 
     const selectedCategoryDetails = selectedCategory ? businessData.categories.find(c => c.id === selectedCategory) : null;
     const isSearching = searchTerm.length > 0;
