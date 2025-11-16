@@ -27,7 +27,7 @@ const BusinessCard: React.FC<BusinessCardProps> = ({ business, onViewDetails }) 
             <div className="flex justify-between items-start gap-4">
                 {/* Left side: Info */}
                 <div className="flex-grow min-w-0">
-                    <h4 className="font-inter text-lg font-bold text-primary pr-16 truncate group-hover:whitespace-normal" title={business.shopName}>{business.shopName}</h4>
+                    <h4 className="text-lg font-bold text-primary pr-16 truncate group-hover:whitespace-normal" title={business.shopName}>{business.shopName}</h4>
                     <div className="mt-2 space-y-1.5 text-text-secondary">
                         <p className="flex items-center gap-3">
                             <i className="fas fa-user w-4 text-center text-gray-400"></i>
