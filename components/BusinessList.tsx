@@ -59,7 +59,7 @@ const BusinessList: React.FC<BusinessListProps> = ({ businesses, categories, sel
                 
                 return (
                     <div key={categoryId} className="animate-fadeInUp" style={{ animationDelay: `${groupIndex * 100}ms`}}>
-                        <div className="flex items-center gap-4 mb-5 pb-3 border-b-2 border-secondary sticky top-2 z-10 bg-background/80 backdrop-blur-sm">
+                        <div className="flex items-center gap-4 mb-5 pb-3 border-b-2 border-secondary">
                              <i className={`${category.icon} text-2xl text-secondary`}></i>
                             <h3 className="text-2xl font-bold font-inter text-primary">{category.name}</h3>
                         </div>
