@@ -23,11 +23,11 @@ const LoadingSpinner: React.FC = () => (
 );
 
 const Header: React.FC = () => (
-    <header className="bg-gradient-to-br from-primary to-secondary text-white text-center p-6 rounded-lg mb-6 shadow-header animate-fadeInUp">
-        <h1 className="font-inter text-3xl md:text-4xl font-bold tracking-tight">
+    <header className="bg-gradient-to-br from-primary to-secondary text-white text-center p-5 rounded-lg mb-6 shadow-header animate-fadeInUp">
+        <h1 className="font-inter text-2xl md:text-3xl font-bold tracking-tight">
           जवळा व्यवसाय निर्देशिका
         </h1>
-        <p className="mt-1 text-md opacity-90">तुमच्या गावातील सर्व व्यवसाय एकाच ठिकाणी!</p>
+        <p className="mt-1 text-sm opacity-90">तुमच्या गावातील सर्व व्यवसाय एकाच ठिकाणी!</p>
     </header>
 );
 
@@ -182,15 +182,15 @@ const AiAssistant: React.FC<{
     };
     
     const AiBusinessResultCard: React.FC<{business: Business}> = ({ business }) => (
-        <div className="bg-surface rounded-lg p-4 shadow-subtle border-l-4 border-secondary flex items-center justify-between gap-3">
-            <div>
-                <h4 className="font-bold text-primary">{business.shopName}</h4>
-                <p className="text-sm text-text-secondary">{business.ownerName}</p>
-                <p className="text-sm text-text-primary font-semibold mt-1">{formatPhoneNumber(business.contactNumber)}</p>
+        <div className="bg-surface rounded-lg p-3 shadow-subtle border-l-4 border-secondary flex items-center justify-between gap-3">
+            <div className="flex-1 min-w-0">
+                <h4 className="font-bold text-primary text-sm truncate">{business.shopName}</h4>
+                <p className="text-xs text-text-secondary truncate">{business.ownerName}</p>
+                <p className="text-xs text-text-primary font-semibold mt-0.5">{formatPhoneNumber(business.contactNumber)}</p>
             </div>
             <button
                 onClick={() => onViewBusiness(business)}
-                className="bg-primary/10 text-primary font-bold py-2 px-4 rounded-lg hover:bg-primary/20 transition-colors"
+                className="bg-primary/10 text-primary font-bold py-1.5 px-3 rounded-lg hover:bg-primary/20 transition-colors text-sm whitespace-nowrap flex-shrink-0"
             >
                 पहा
             </button>
@@ -198,18 +198,18 @@ const AiAssistant: React.FC<{
     );
     
     const AiResponseCard: React.FC<{aiResult: AiResult}> = ({aiResult}) => (
-        <div className="mt-6 space-y-4 animate-fadeInUp">
-            <div className="p-4 bg-primary/10 rounded-lg">
-                <p className="font-semibold text-text-primary">{aiResult.summary}</p>
+        <div className="mt-4 space-y-3 animate-fadeInUp">
+            <div className="p-3 bg-primary/10 rounded-lg">
+                <p className="font-semibold text-text-primary text-sm">{aiResult.summary}</p>
             </div>
-            <div className="space-y-3">
+            <div className="space-y-2">
                 {aiResult.results.map((result, index) => {
                     if (result.type === 'business' && result.businessId) {
                         const business = businessMap.get(result.businessId);
                         return business ? <AiBusinessResultCard key={business.id} business={business} /> : null;
                     }
                     if (result.type === 'text' && result.content) {
-                        return <p key={index} className="p-3 bg-surface rounded-lg text-text-secondary shadow-subtle">{result.content}</p>
+                        return <p key={index} className="p-3 bg-surface rounded-lg text-text-secondary shadow-subtle text-sm">{result.content}</p>
                     }
                     return null;
                 })}
@@ -841,20 +841,20 @@ const BusinessForm: React.FC<{
                         rows={2}
                     />
                 </div>
-                <div className="flex flex-wrap gap-6 my-4">
-                   <label className="flex items-center gap-2 cursor-pointer">
+                <div className="flex flex-wrap gap-4 my-4 items-center">
+                   <label className="flex items-center gap-1.5 cursor-pointer text-sm">
                        <input 
                            type="checkbox" 
                            name="homeDelivery" 
                            checked={formData.homeDelivery || false} 
                            onChange={handleCheckboxChange} 
                            disabled={isSaving}
-                           className="w-4 h-4 accent-primary"
+                           className="w-3.5 h-3.5 accent-primary cursor-pointer"
                        /> 
                        <span>होम डिलिव्हरी</span>
                    </label>
-                   <fieldset className="flex items-center gap-4">
-                      <legend className="mr-2 font-semibold">पेमेंट:</legend>
+                   <div className="flex items-center gap-3 text-sm">
+                      <span className="font-semibold">पेमेंट:</span>
                       <label className="flex items-center gap-1 cursor-pointer">
                           <input 
                               type="checkbox" 
@@ -862,7 +862,7 @@ const BusinessForm: React.FC<{
                               checked={formData.paymentOptions?.includes('UPI') || false} 
                               onChange={handleCheckboxChange} 
                               disabled={isSaving}
-                              className="w-4 h-4 accent-primary"
+                              className="w-3.5 h-3.5 accent-primary cursor-pointer"
                           /> 
                           <span>UPI</span>
                       </label>
@@ -873,7 +873,7 @@ const BusinessForm: React.FC<{
                               checked={formData.paymentOptions?.includes('Cash') || false} 
                               onChange={handleCheckboxChange} 
                               disabled={isSaving}
-                              className="w-4 h-4 accent-primary"
+                              className="w-3.5 h-3.5 accent-primary cursor-pointer"
                           /> 
                           <span>Cash</span>
                       </label>
@@ -884,11 +884,11 @@ const BusinessForm: React.FC<{
                               checked={formData.paymentOptions?.includes('Card') || false} 
                               onChange={handleCheckboxChange} 
                               disabled={isSaving}
-                              className="w-4 h-4 accent-primary"
+                              className="w-3.5 h-3.5 accent-primary cursor-pointer"
                           /> 
                           <span>Card</span>
                       </label>
-                   </fieldset>
+                   </div>
                 </div>
                 <button 
                     type="submit" 
@@ -1176,7 +1176,7 @@ const App: React.FC = () => {
                 />
 
                 {!isSearching && (
-                    <div className="mb-8">
+                    <div className="mb-6">
                         <CategoryGrid 
                             categories={businessData.categories} 
                             businessCounts={businessCounts} 
