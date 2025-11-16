@@ -23,7 +23,7 @@ const LoadingSpinner: React.FC = () => (
 );
 
 const Header: React.FC = () => (
-    <header className="bg-gradient-to-br from-primary to-secondary text-white text-center p-5 rounded-lg mb-6 shadow-header animate-fadeInUp">
+    <header className="bg-gradient-to-br from-primary via-primary-dark to-secondary text-white text-center p-5 rounded-2xl mb-6 shadow-lg animate-fadeInUp">
         <h1 className="font-poppins text-2xl md:text-3xl font-bold tracking-tight">
           जवळा व्यवसाय निर्देशिका
         </h1>
@@ -230,7 +230,7 @@ const AiAssistant: React.FC<{
                     type="text"
                     value={query}
                     onChange={handleInputChange}
-                    placeholder="उदा. किराणा दुकान, राहुल पद्मावार..."
+                    placeholder="उदा. 'रात्री 9 वाजता उघडे असलेले पिझ्झा दुकान शोधा' किंवा 'होम डिलिव्हरी करणारे किराणा'"
                     className="flex-grow px-4 py-2.5 border-2 border-border-color rounded-lg bg-background focus:outline-none focus:border-primary text-sm"
                     disabled={isLoading}
                 />
@@ -360,7 +360,7 @@ const BusinessDetailModal: React.FC<{
     return (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-40 p-4 animate-fadeInUp" style={{animationDuration: '0.3s'}} onClick={onClose}>
             <div className="bg-background rounded-xl shadow-xl w-full max-w-md flex flex-col max-h-[90vh]" onClick={e => e.stopPropagation()}>
-                <header className="bg-gradient-to-br from-primary to-secondary p-5 rounded-t-xl text-white relative">
+                <header className="bg-gradient-to-br from-primary via-primary-dark to-secondary p-5 rounded-t-xl text-white relative">
                     <button 
                         onClick={onClose} 
                         className="absolute top-2 right-2 text-white/70 hover:text-white text-3xl w-10 h-10 flex items-center justify-center transition-colors"
@@ -455,14 +455,14 @@ const BusinessDetailModal: React.FC<{
 };
 
 const Footer: React.FC<{ onAdminLoginClick: () => void }> = ({ onAdminLoginClick }) => (
-    <footer className="bg-gradient-to-br from-primary to-secondary text-white p-8 mt-16 text-center shadow-header">
+    <footer className="bg-gradient-to-br from-primary via-primary-dark to-secondary text-white p-8 mt-16 text-center shadow-lg rounded-t-3xl">
         <div className="relative z-10 space-y-6">
             <h3 className="font-poppins text-2xl font-bold">तुमचा व्यवसाय वाढवा!</h3>
             <p className="text-md opacity-90 max-w-lg mx-auto">तुमच्या व्यवसायाची माहिती आमच्या निर्देशिकेत जोडून संपूर्ण गावापर्यंत पोहोचा. नोंदणी प्रक्रिया अगदी सोपी आणि विनामूल्य आहे.</p>
             <div className="flex flex-col items-center gap-3">
                  <button
                     onClick={onAdminLoginClick}
-                    className="inline-flex items-center gap-3 px-6 py-3 bg-white/20 hover:bg-white/30 text-white rounded-full transition-all transform hover:scale-105 shadow-lg font-semibold"
+                    className="inline-flex items-center gap-3 px-6 py-3 bg-white/20 hover:bg-white/30 text-white rounded-full transition-all transform hover:scale-105 shadow-lg font-semibold backdrop-blur-sm"
                 >
                     <i className="fas fa-user-shield text-xl"></i>
                     <span className="text-lg font-bold">ॲडमिन लॉगिन / व्यवसाय जोडा</span>
