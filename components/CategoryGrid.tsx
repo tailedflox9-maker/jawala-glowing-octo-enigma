@@ -7,22 +7,16 @@ interface CategoryItemProps {
     count: number;
     isSelected: boolean;
     onClick: () => void;
-    isHidden: boolean;
     delay: number;
 }
 
-const CategoryItem: React.FC<CategoryItemProps> = ({ name, icon, count, isSelected, onClick, isHidden, delay }) => {
+const CategoryItem: React.FC<CategoryItemProps> = ({ name, icon, count, isSelected, onClick, delay }) => {
     const baseClasses = "flex flex-col items-center justify-center p-3 rounded-xl cursor-pointer transition-all duration-300 transform text-center group bg-surface shadow-card border-l-4";
     
     const unselectedClasses = "border-transparent hover:shadow-card-hover hover:scale-105";
     const selectedClasses = "border-primary shadow-inner bg-green-50 scale-105";
-    const hiddenClasses = "opacity-0 scale-90 pointer-events-none";
 
-    let itemClasses = `${baseClasses} ${isSelected ? selectedClasses : unselectedClasses}`;
-
-    if (isHidden) {
-        return <div className={`${itemClasses} ${hiddenClasses}`} />;
-    }
+    const itemClasses = `${baseClasses} ${isSelected ? selectedClasses : unselectedClasses}`;
 
     return (
         <div
@@ -48,8 +42,6 @@ interface CategoryGridProps {
 }
 
 const CategoryGrid: React.FC<CategoryGridProps> = ({ categories, businessCounts, selectedCategory, onCategorySelect }) => {
-    const isAnyCategorySelected = selectedCategory !== null;
-
     const allCategoriesCount = React.useMemo(() => 
         Object.values(businessCounts).reduce((sum: number, count: number) => sum + count, 0), 
     [businessCounts]);
@@ -62,7 +54,6 @@ const CategoryGrid: React.FC<CategoryGridProps> = ({ categories, businessCounts,
                 count={allCategoriesCount}
                 isSelected={selectedCategory === null}
                 onClick={() => onCategorySelect(null)}
-                isHidden={isAnyCategorySelected}
                 delay={0}
             />
             {categories.map((category, index) => (
@@ -73,7 +64,6 @@ const CategoryGrid: React.FC<CategoryGridProps> = ({ categories, businessCounts,
                     count={businessCounts[category.id] || 0}
                     isSelected={selectedCategory === category.id}
                     onClick={() => onCategorySelect(category.id)}
-                    isHidden={isAnyCategorySelected && selectedCategory !== category.id}
                     delay={(index + 1) * 25}
                 />
             ))}
