@@ -28,8 +28,8 @@ const CategoryItem: React.FC<CategoryItemProps> = ({ name, icon, count, isSelect
             onKeyPress={(e) => (e.key === 'Enter' || e.key === ' ') && onClick()}
         >
             <i className={`${icon} text-4xl mb-3 text-primary transition-transform duration-500 group-hover:rotate-[360deg]`}></i>
-            <span className={`font-poppins font-semibold text-sm leading-tight text-text-primary`}>{name}</span>
-            <span className={`text-xs mt-1 font-devanagari ${isSelected ? 'text-primary/80' : 'text-text-secondary'}`}>({count})</span>
+            <span className={`font-semibold text-sm leading-tight text-text-primary`}>{name}</span>
+            <span className={`text-xs mt-1 ${isSelected ? 'text-primary/80' : 'text-text-secondary'}`}>({count})</span>
         </div>
     );
 };
