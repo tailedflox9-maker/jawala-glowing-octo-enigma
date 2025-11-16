@@ -1,6 +1,7 @@
 // Service Worker for Jawala Business Directory
-const CACHE_NAME = 'jawala-business-v1';
-const RUNTIME_CACHE = 'jawala-runtime-v1';
+const CACHE_VERSION = '1.0.0';
+const CACHE_NAME = `jawala-business-v${CACHE_VERSION}`;
+const RUNTIME_CACHE = `jawala-runtime-v${CACHE_VERSION}`;
 
 // Assets to cache on install
 const PRECACHE_ASSETS = [
@@ -14,7 +15,7 @@ const PRECACHE_ASSETS = [
 
 // Install event - cache assets
 self.addEventListener('install', (event) => {
-  console.log('🔧 Service Worker installing...');
+  console.log(`🔧 Service Worker v${CACHE_VERSION} installing...`);
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
@@ -30,18 +31,26 @@ self.addEventListener('install', (event) => {
 
 // Activate event - cleanup old caches
 self.addEventListener('activate', (event) => {
-  console.log('✅ Service Worker activated');
+  console.log(`✅ Service Worker v${CACHE_VERSION} activated`);
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames
-          .filter((name) => name !== CACHE_NAME && name !== RUNTIME_CACHE)
+          .filter((name) => {
+            // Delete any cache that doesn't match current version
+            return name.startsWith('jawala-') && 
+                   name !== CACHE_NAME && 
+                   name !== RUNTIME_CACHE;
+          })
           .map((name) => {
-            console.log('🗑️ Deleting old cache:', name);
+            console.log(`🗑️ Deleting old cache: ${name}`);
             return caches.delete(name);
           })
       );
-    }).then(() => self.clients.claim())
+    }).then(() => {
+      console.log(`✨ Cache cleanup complete. Active caches: ${CACHE_NAME}, ${RUNTIME_CACHE}`);
+      return self.clients.claim();
+    })
   );
 });
 
@@ -108,6 +117,35 @@ self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
+  
+  // Handle cache clear request
+  if (event.data && event.data.type === 'CLEAR_CACHE') {
+    event.waitUntil(
+      caches.keys().then((cacheNames) => {
+        return Promise.all(
+          cacheNames
+            .filter((name) => name.startsWith('jawala-'))
+            .map((name) => {
+              console.log(`🗑️ Clearing cache: ${name}`);
+              return caches.delete(name);
+            })
+        );
+      }).then(() => {
+        console.log('✅ All caches cleared');
+        // Notify all clients that cache is cleared
+        return self.clients.matchAll();
+      }).then((clients) => {
+        clients.forEach(client => {
+          client.postMessage({ type: 'CACHE_CLEARED' });
+        });
+      })
+    );
+  }
+  
+  // Handle version check request
+  if (event.data && event.data.type === 'GET_VERSION') {
+    event.ports[0].postMessage({ version: CACHE_VERSION });
+  }
 });
 
 // Background sync for offline data submission (future enhancement)
@@ -120,3 +158,6 @@ self.addEventListener('sync', (event) => {
     );
   }
 });
+
+// Log current version on load
+console.log(`📱 Service Worker version ${CACHE_VERSION} loaded`);
