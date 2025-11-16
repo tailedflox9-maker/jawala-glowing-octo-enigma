@@ -24,16 +24,27 @@ const formatPhoneNumber = (phoneNumber: string): string => {
 
 // --- CORE COMPONENTS ---
 const LoadingSpinner: React.FC = () => (
-    <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-100" style={{
-        backgroundImage: 'radial-gradient(circle, rgba(0,0,0,0.05) 1px, transparent 1px)',
+    <div className="fixed inset-0 flex items-center justify-center z-50" style={{
+        backgroundColor: '#1a1a1a',
+        backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px)',
         backgroundSize: '30px 30px'
     }}>
-        <div className="bg-gradient-to-r from-primary to-secondary text-white text-center p-8 rounded-3xl shadow-2xl max-w-2xl mx-4">
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-3">
+        <div className="text-center">
+            {/* Simple animated icon */}
+            <div className="w-20 h-20 mx-auto mb-6 relative">
+                <div className="absolute inset-0 border-4 border-primary/30 rounded-full"></div>
+                <div className="absolute inset-0 border-4 border-t-primary border-transparent rounded-full animate-spin"></div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                    <i className="fas fa-store text-2xl text-primary"></i>
+                </div>
+            </div>
+            
+            {/* App Name */}
+            <h1 className="text-2xl font-bold text-white mb-2">
                 जवळा व्यवसाय निर्देशिका
             </h1>
-            <p className="text-lg opacity-90">
-                तुमच्या गावातील सर्व व्यवसाय एकाच ठिकाणी!
+            <p className="text-white/70 text-sm">
+                लोड करत आहे...
             </p>
         </div>
     </div>
@@ -444,11 +455,11 @@ const BusinessDetailModal: React.FC<{
 
     return (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-40 p-4 animate-fadeInUp" style={{animationDuration: '0.3s'}} onClick={onClose}>
-            <div className="bg-background rounded-3xl w-full max-w-md flex flex-col max-h-[90vh] overflow-hidden shadow-2xl" onClick={e => e.stopPropagation()}>
-                <header className="bg-gradient-to-r from-primary to-secondary p-6 text-white relative rounded-t-3xl">
+            <div className="bg-background rounded-xl w-full max-w-md flex flex-col max-h-[90vh] overflow-hidden" onClick={e => e.stopPropagation()}>
+                <header className="bg-gradient-to-r from-primary to-secondary p-5 text-white relative">
                     <button 
                         onClick={onClose} 
-                        className="absolute top-3 right-3 text-white/70 hover:text-white text-3xl w-10 h-10 flex items-center justify-center transition-colors"
+                        className="absolute top-2 right-2 text-white/70 hover:text-white text-3xl w-10 h-10 flex items-center justify-center transition-colors"
                         aria-label="Close"
                     >
                         &times;
@@ -506,20 +517,20 @@ const BusinessDetailModal: React.FC<{
                       </div>
                     }
                 </main>
-                <footer className="p-4 border-t border-border-color grid grid-cols-2 gap-3 bg-background/70 rounded-b-3xl">
+                <footer className="p-4 border-t border-border-color grid grid-cols-2 gap-3 bg-background/70">
                     <a 
                         href={`https://wa.me/91${business.contactNumber}?text=${encodeURIComponent('नमस्कार, मी "जवळा व्यवसाय निर्देशिका" वरून आपला संपर्क घेतला आहे.')}`}
                         onClick={() => trackBusinessInteraction('whatsapp', business.id)}
                         target="_blank" 
                         rel="noopener noreferrer" 
-                        className="w-full text-center py-3 rounded-xl transition-all flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold"
+                        className="w-full text-center py-3 rounded-lg transition-all flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold"
                     >
                         <i className="fab fa-whatsapp text-xl"></i> WhatsApp
                     </a>
                     <button 
                         onClick={shareBusinessDetails} 
                         disabled={isSharing} 
-                        className="w-full text-center py-3 rounded-xl transition-all flex items-center justify-center gap-2 bg-secondary hover:bg-secondary/90 text-white font-bold disabled:bg-gray-400 disabled:cursor-not-allowed"
+                        className="w-full text-center py-3 rounded-lg transition-all flex items-center justify-center gap-2 bg-secondary hover:bg-secondary/90 text-white font-bold disabled:bg-gray-400 disabled:cursor-not-allowed"
                     >
                         {isSharing ? (
                             <>
@@ -553,23 +564,21 @@ const Footer: React.FC<{ onAdminLoginClick: () => void }> = ({ onAdminLoginClick
     
     return (
         <>
-            <footer className="mt-16 px-4 pb-8">
-                <div className="bg-gradient-to-r from-primary to-secondary text-white p-8 text-center shadow-2xl rounded-3xl max-w-4xl mx-auto">
-                    <div className="space-y-6">
-                        <h3 className="text-2xl font-bold">तुमचा व्यवसाय वाढवा!</h3>
-                        <p className="text-md opacity-90 max-w-lg mx-auto">तुमच्या व्यवसायाची माहिती आमच्या निर्देशिकेत जोडून संपूर्ण गावापर्यंत पोहोचा.</p>
-                        
-                        <button
-                            onClick={() => setShowContactPopup(true)}
-                            className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-white/20 hover:bg-white/30 text-white rounded-full transition-all transform hover:scale-105 shadow-lg font-bold backdrop-blur-sm text-lg"
-                        >
-                            <i className="fas fa-address-book text-xl"></i>
-                            <span>संपर्क करा</span>
-                        </button>
-                        
-                        <div className="text-sm opacity-80 pt-2">
-                            © {new Date().getFullYear()} Jawala Vyapar
-                        </div>
+            <footer className="bg-gradient-to-r from-primary to-secondary text-white p-8 mt-16 text-center shadow-lg rounded-t-xl">
+                <div className="relative z-10 space-y-6">
+                    <h3 className="text-2xl font-bold">तुमचा व्यवसाय वाढवा!</h3>
+                    <p className="text-md opacity-90 max-w-lg mx-auto">तुमच्या व्यवसायाची माहिती आमच्या निर्देशिकेत जोडून संपूर्ण गावापर्यंत पोहोचा.</p>
+                    
+                    <button
+                        onClick={() => setShowContactPopup(true)}
+                        className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-white/20 hover:bg-white/30 text-white rounded-full transition-all transform hover:scale-105 shadow-lg font-bold backdrop-blur-sm text-lg"
+                    >
+                        <i className="fas fa-address-book text-xl"></i>
+                        <span>संपर्क करा</span>
+                    </button>
+                    
+                    <div className="text-sm opacity-80 pt-2">
+                        © {new Date().getFullYear()} Jawala Vyapar
                     </div>
                 </div>
             </footer>
