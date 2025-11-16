@@ -55,7 +55,7 @@ const UserNamePopup: React.FC<UserNamePopupProps> = ({ onSave }) => {
           <div className="inline-flex items-center justify-center w-20 h-20 bg-primary/10 rounded-full mb-4">
             <span className="text-5xl">👋</span>
           </div>
-          <h3 className="font-poppins text-3xl font-bold text-primary mb-2">स्वागत आहे!</h3>
+          <h3 className="text-3xl font-bold text-primary mb-2">स्वागत आहे!</h3>
           <p className="text-text-secondary text-lg">जवळा व्यवसाय निर्देशिकेत</p>
         </div>
 
